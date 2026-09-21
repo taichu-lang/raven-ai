@@ -1,0 +1,28 @@
+{
+  "name": "raven-ai",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "rm -rf packages/web/.next && bun run --cwd packages/web dev",
+    "build": "bun run --cwd packages/web build",
+    "app:dev": "rm -rf app/.next && bun run --cwd app tauri dev"
+  },
+  "workspaces": [
+    "app"
+  ],
+  "catalog": {
+    "next": "16.2.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "zustand": "^5.0.12",
+    "next-intl": "^4.9.0"
+  },
+  "dependencies": {
+    "clsx": "2.1.1"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.8",
+    "prettier-plugin-tailwindcss": "^0.7.4",
+    "typescript": "5.6.3"
+  }
+}
