@@ -1,12 +1,12 @@
-import { AppSidebar } from "@/components/AppSidebar";
-import "@/styles/globals.css";
 import clsx from "clsx";
 import { Metadata, Viewport } from "next";
 import { Providers } from "./providers";
 
+import "@/styles/globals.css";
+
 export const metadata: Metadata = {
-  title: "Hero Examples",
-  description: "Examples with Hero UI, Next.JS",
+  title: "Raven AI",
+  description: "Web application for Raven AI.",
   icons: {
     icon: "/favicon.ico",
   },
@@ -33,11 +33,21 @@ export default function RootLayout({
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-          <div className="flex h-screen overflow-hidden">
-            <AppSidebar />
-            <main className="container mx-auto max-w-7xl min-w-0 flex-1 overflow-y-auto px-6 pt-16">
+          <div className="relative flex h-screen flex-col">
+            <main className="container mx-auto max-w-7xl flex-grow px-6 pt-16">
               {children}
             </main>
+            <footer className="flex w-full items-center justify-center py-3">
+              <a
+                className="flex items-center gap-1 text-current no-underline"
+                href="https://heroui.com?utm_source=next-app-template"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <span className="text-muted">Powered by</span>
+                <p className="text-accent">HeroUI</p>
+              </a>
+            </footer>
           </div>
         </Providers>
       </body>

@@ -1,12 +1,13 @@
 {
-  "name": "raven-ai-app",
-  "private": true,
-  "version": "0.1.0",
+  "name": "raven-ai-web",
+  "version": "0.0.1",
   "type": "module",
+  "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "tauri": "tauri"
+    "start": "next start",
+    "lint": "eslint --fix"
   },
   "dependencies": {
     "@heroui/react": "catalog:",
@@ -15,10 +16,7 @@
     "next-themes": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "hero-next": "workspace:*",
-    "intl-messageformat": "10.7.16",
-    "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-opener": "^2"
+    "intl-messageformat": "10.7.16"
   },
   "devDependencies": {
     "@eslint/compat": "1.2.8",
@@ -26,12 +24,11 @@
     "@eslint/js": "9.25.1",
     "@next/eslint-plugin-next": "16.2.0",
     "@tailwindcss/postcss": "4.1.11",
-    "@tauri-apps/cli": "^2",
     "@types/node": "20.9.0",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
-    "@typescript-eslint/eslint-plugin": "^8.70.0",
-    "@typescript-eslint/parser": "^8.70.0",
+    "@typescript-eslint/eslint-plugin": "8.34.1",
+    "@typescript-eslint/parser": "8.34.1",
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "9.25.1",
     "eslint-config-next": "16.2.0",

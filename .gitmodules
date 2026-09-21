@@ -1,0 +1,4 @@
+[submodule "hero-next"]
+	path = hero-next
+	url = git@github.com:taichu-lang/hero-next.git
+	branch = main

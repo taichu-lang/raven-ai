@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "@heroui/styles";
+@source "../../node_modules/hero-next/core";
 
 @custom-variant dark (&:is(.dark *));
 
