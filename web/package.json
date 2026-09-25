@@ -16,7 +16,9 @@
     "next-themes": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "intl-messageformat": "10.7.16"
+    "hero-next": "workspace:*",
+    "intl-messageformat": "10.7.16",
+    "lucide-react": "^1.47.0"
   },
   "devDependencies": {
     "@eslint/compat": "1.2.8",
