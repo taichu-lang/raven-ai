@@ -1,6 +1,7 @@
 "use client";
 
 import { Chip } from "@heroui/react";
+import { ModelSelector } from "hero-next/blocks/chat";
 import {
   ChatComposeButton,
   ChatComposer,
@@ -9,7 +10,6 @@ import {
   ChatMessageContextProvider,
   ChatMessageList,
   ChatMessageMetadata,
-  ModelSelector,
 } from "hero-next/chat";
 import { PaperclipIcon } from "lucide-react";
 import { DemoBlock, ShowcaseSection } from "../_components/showcase-section";
