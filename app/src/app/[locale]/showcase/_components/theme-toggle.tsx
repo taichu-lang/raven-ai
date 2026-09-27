@@ -1,11 +1,10 @@
 "use client";
 
 import { ToggleButton } from "@heroui/react";
-
-import { useThemeToggle } from "@/hooks/use-theme-toggle";
+import { useTheme } from "hero-next/theme";
 
 export function ThemeToggle() {
-  const { isDark, mounted, toggleTheme } = useThemeToggle();
+  const { isDark, mounted, toggleTheme } = useTheme();
 
   return (
     <ToggleButton

@@ -1,5 +1,12 @@
-import { Card, Link, Separator, Typography } from "@heroui/react";
-
+import {
+  Button,
+  Card,
+  Dropdown,
+  Link,
+  Separator,
+  Typography,
+} from "@heroui/react";
+import { HoverDropdown } from "hero-next/layout";
 import { DemoBlock, ShowcaseSection } from "../_components/showcase-section";
 
 export function LayoutSection() {
@@ -14,8 +21,8 @@ export function LayoutSection() {
           <Card.Header>
             <Card.Title>Become an Acme creator!</Card.Title>
             <Card.Description>
-              Head over to the Acme Creator Hub to start earning rewards from fans and
-              supporters.
+              Head over to the Acme Creator Hub to start earning rewards from
+              fans and supporters.
             </Card.Description>
           </Card.Header>
           <Card.Footer>
@@ -36,7 +43,7 @@ export function LayoutSection() {
             </p>
           </div>
           <Separator className="my-4" />
-          <div className="flex h-5 items-center space-x-4 text-small">
+          <div className="text-small flex h-5 items-center space-x-4">
             <div>Blog</div>
             <Separator orientation="vertical" />
             <div>Docs</div>
@@ -53,14 +60,21 @@ export function LayoutSection() {
           <Typography type="h3">Composable by default</Typography>
           <Typography type="h4">Subheading</Typography>
           <Typography>
-            HeroUI Typography uses React Aria Components&apos; Text as a primitive, offering
-            semantic typography types and render-prop polymorphism.
+            HeroUI Typography uses React Aria Components&apos; Text as a
+            primitive, offering semantic typography types and render-prop
+            polymorphism.
           </Typography>
           <Typography color="muted" type="body-sm">
             Smaller, muted body text for secondary descriptions.
           </Typography>
           <Typography type="code">pnpm add @heroui/react</Typography>
         </div>
+      </DemoBlock>
+
+      <DemoBlock title="HoverDropdown">
+        <HoverDropdown trigger={<Button>hover me</Button>}>
+          <Dropdown.Item>选项1</Dropdown.Item>
+        </HoverDropdown>
       </DemoBlock>
     </ShowcaseSection>
   );

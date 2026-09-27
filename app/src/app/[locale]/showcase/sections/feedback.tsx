@@ -1,5 +1,4 @@
 import { Alert, Label, ProgressBar, Skeleton, Spinner } from "@heroui/react";
-
 import { DemoBlock, ShowcaseSection } from "../_components/showcase-section";
 
 const SPINNER_SIZES = ["sm", "md", "lg", "xl"] as const;
@@ -41,7 +40,9 @@ export function FeedbackSection() {
             <Alert.Indicator />
             <Alert.Content>
               <Alert.Title>Unable to connect to server</Alert.Title>
-              <Alert.Description>Please check your network connection.</Alert.Description>
+              <Alert.Description>
+                Please check your network connection.
+              </Alert.Description>
             </Alert.Content>
           </Alert>
         </div>

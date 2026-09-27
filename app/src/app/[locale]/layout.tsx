@@ -6,11 +6,12 @@ import { routing } from "hero-next/i18n/routing";
 import { ThemeProvider } from "hero-next/theme";
 import { Metadata, Viewport } from "next";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Raven AI",
-  description: "Web application for Raven AI.",
+  description: "Desktop application of Raven AI Agent.",
   icons: {
     icon: "/favicon.ico",
   },
@@ -52,11 +53,11 @@ export default async function RootLayout({
             theme={{ attribute: "class", defaultTheme: "dark" }}
             locale={locale}
           >
-            <div className="flex h-screen w-full overflow-hidden">
+            <div className="flex h-screen overflow-hidden">
               <AppSidebar />
-              <div className="container mx-auto max-w-7xl flex-1 overflow-y-auto px-6">
+              <main className="container mx-auto max-w-7xl min-w-0 flex-1 overflow-y-auto px-6 pt-16">
                 {children}
-              </div>
+              </main>
             </div>
           </ThemeProvider>
         </NextIntlClientProvider>

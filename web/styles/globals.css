@@ -2,8 +2,10 @@
 @import "@heroui/styles";
 @import "hero-next/base.css";
 @source "../node_modules/hero-next/core";
+@source "../node_modules/hero-next/blocks";
+@source "../node_modules/base-ui/core";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&: is(.dark *));
 
 @theme {
   --font-sans: "font", sans-serif;

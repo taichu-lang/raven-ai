@@ -10,7 +10,8 @@
   "workspaces": [
     "app",
     "web",
-    "hero-next"
+    "hero-next",
+    "base-ui"
   ],
   "catalog": {
     "next": "16.3.5",

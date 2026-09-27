@@ -13,12 +13,15 @@
     "@heroui/styles": "catalog:",
     "next": "catalog:",
     "next-themes": "catalog:",
+    "next-intl": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "hero-next": "workspace:*",
+    "base-ui": "workspace:*",
     "intl-messageformat": "10.7.16",
     "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-opener": "^2"
+    "@tauri-apps/plugin-opener": "^2",
+    "lucide-react": "^1.47.0"
   },
   "devDependencies": {
     "@eslint/compat": "1.2.8",

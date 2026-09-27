@@ -1,5 +1,4 @@
 import { Avatar, AvatarGroup, Badge, Chip, Table } from "@heroui/react";
-
 import { DemoBlock, ShowcaseSection } from "../_components/showcase-section";
 
 const AVATAR_URLS = {
