@@ -1,3 +1,8 @@
 {
-  "app": "Raven 智能体"
+  "app": "Raven 智能体",
+  "chat": {
+    "greeting": "有什么我可以帮你？",
+    "placeholder": "向 Raven 提问",
+    "reliabilityTip": "内容由 AI 生成, 请注意核实"
+  }
 }

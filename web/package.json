@@ -12,15 +12,15 @@
   "dependencies": {
     "@heroui/react": "catalog:",
     "@heroui/styles": "catalog:",
-    "next": "catalog:",
-    "next-themes": "catalog:",
-    "next-intl": "catalog:",
-    "react": "catalog:",
-    "react-dom": "catalog:",
-    "hero-next": "workspace:*",
     "base-ui": "workspace:*",
+    "hero-next": "workspace:*",
     "intl-messageformat": "10.7.16",
-    "lucide-react": "^1.47.0"
+    "lucide-react": "^1.47.0",
+    "next": "catalog:",
+    "next-intl": "catalog:",
+    "next-themes": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:"
   },
   "devDependencies": {
     "@eslint/compat": "1.2.8",

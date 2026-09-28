@@ -1,8 +1,0 @@
-import { Typography } from "@heroui/react";
-import { useTranslations } from "next-intl";
-
-export default function Default() {
-  const t = useTranslations();
-
-  return <Typography type="body">{t("app")}</Typography>;
-}

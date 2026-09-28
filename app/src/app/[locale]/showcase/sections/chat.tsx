@@ -8,7 +8,6 @@ import {
   ChatMessage,
   ChatMessageBubble,
   ChatMessageContextProvider,
-  ChatMessageList,
   ChatMessageMetadata,
 } from "hero-next/chat";
 import { PaperclipIcon } from "lucide-react";
@@ -18,7 +17,7 @@ export function ChatSection() {
   return (
     <ShowcaseSection id="chat" title="AI Chat" description="ChatMessage">
       <DemoBlock title="MessageList">
-        <ChatMessageList>
+        <div className="flex flex-col gap-3">
           <ChatMessage role="user" align="end">
             <ChatMessageContextProvider
               message={{
@@ -48,7 +47,7 @@ export function ChatSection() {
               <ChatMessageMetadata spacing="sm"></ChatMessageMetadata>
             </ChatMessageContextProvider>
           </ChatMessage>
-        </ChatMessageList>
+        </div>
       </DemoBlock>
       <DemoBlock title="ChatComposer">
         <ChatComposer

@@ -54,9 +54,7 @@ export default async function RootLayout({
           >
             <div className="flex h-screen w-full overflow-hidden">
               <AppSidebar />
-              <div className="container mx-auto max-w-7xl flex-1 overflow-y-auto px-6">
-                {children}
-              </div>
+              <div className="container flex-1 overflow-y-auto">{children}</div>
             </div>
           </ThemeProvider>
         </NextIntlClientProvider>
