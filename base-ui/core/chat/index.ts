@@ -1,2 +1,2 @@
 export { AnnotationListView } from "./AnnotationListView";
-export { Composer } from "./Composer";
+export { Composer, DraftComposer } from "./Composer";

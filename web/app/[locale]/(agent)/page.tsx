@@ -1,7 +1,7 @@
 "use client";
 
 import { Typography } from "@heroui/react";
-import { Composer } from "base-ui/chat";
+import { DraftComposer } from "base-ui/chat";
 import { useTranslations } from "next-intl";
 
 export default function ChatPage() {
@@ -12,7 +12,8 @@ export default function ChatPage() {
       <div className="w-full justify-start">
         <Typography type="h3">{t("chat.greeting")}</Typography>
       </div>
-      <Composer draft={true} />
+      {/* No ChatContext here. */}
+      <DraftComposer />
     </div>
   );
 }
