@@ -2,10 +2,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> },
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   const serverUrl = process.env.SERVER_URL;
   if (!serverUrl) {
     return NextResponse.error();
@@ -28,9 +25,8 @@ export async function POST(
       // We can not get the status code from fetchEventSource, so just be 200.
       status: 200,
       headers: {
-        // Content type must be `text/event-stream`, as fetchEventSource only
-        // supports event stream. If content type is `application/json` here,
-        // `onerror` callback will be called, however, data in the callback is
+        // Content type must be `text/event-stream`, as fetchEventSource only supports event stream. If content
+        // type is `application/json` here, `onerror` callback will be called, however, data in the callback is
         // not the `event` above, but a content type mismatch error.
         "Content-Type": "text/event-stream; charset=utf-8",
         "Cache-Control": "no-cache, no-transform",

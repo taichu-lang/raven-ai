@@ -119,11 +119,7 @@ function Preferences() {
 function ProfileDropdown() {
   return (
     <Dropdown>
-      <Dropdown.Trigger
-        className={
-          "hover:bg-default flex w-full items-center gap-2 rounded-2xl p-1"
-        }
-      >
+      <Dropdown.Trigger className={"hover:bg-default flex w-full items-center gap-2 rounded-2xl p-1"}>
         <Avatar size="sm">A</Avatar>
         <div className="flex flex-col text-start">
           <p className="text-sm">leo</p>
@@ -169,16 +165,10 @@ export function AppSidebar() {
         </Sidebar.Item>
       </nav>
       <Sidebar.Body>
-        <Sidebar.Item
-          href="/extensions"
-          icon={<BlocksIcon className="size-4" />}
-        >
+        <Sidebar.Item href="/extensions" icon={<BlocksIcon className="size-4" />}>
           扩展
         </Sidebar.Item>
-        <Sidebar.Item
-          href="/channels"
-          icon={<MonitorSmartphoneIcon className="size-4" />}
-        >
+        <Sidebar.Item href="/channels" icon={<MonitorSmartphoneIcon className="size-4" />}>
           频道
         </Sidebar.Item>
         <Tabs variant="secondary" className="mt-4">

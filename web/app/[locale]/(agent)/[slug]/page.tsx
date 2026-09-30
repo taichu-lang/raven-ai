@@ -38,16 +38,11 @@ export default function ChatPage() {
         <ChatMessageList handleRef={messageListHandler} />
       </div>
       <div className="bg-background sticky bottom-0 left-0 z-10">
-        <Button
-          isIconOnly
-          onClick={() => messageListHandler.current?.scrollToBottom()}
-        >
+        <Button isIconOnly onClick={() => messageListHandler.current?.scrollToBottom()}>
           <ArrowDown className="text-muted size-4" />
         </Button>
         <Composer url={`/api/chat/${slug}`} onTurnStarted={handleTurnStarted} />
-        <p className="text-background-inverse my-2 text-center text-xs">
-          {t("chat.reliabilityTip")}
-        </p>
+        <p className="text-background-inverse my-2 text-center text-xs">{t("chat.reliabilityTip")}</p>
       </div>
     </React.Fragment>
   );

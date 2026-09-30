@@ -6,13 +6,7 @@ import { ChatComposer } from "hero-next/chat";
 import { useRouter } from "hero-next/i18n/navigation";
 import { useTranslations } from "next-intl";
 
-export function Composer({
-  url,
-  onTurnStarted,
-}: {
-  url: string;
-  onTurnStarted: (index: number) => void;
-}) {
+export function Composer({ url, onTurnStarted }: { url: string; onTurnStarted: (index: number) => void }) {
   const t = useTranslations();
   const { sendChatMessage } = useEventSource();
 
@@ -20,12 +14,7 @@ export function Composer({
     sendChatMessage(content, url, onTurnStarted);
   };
 
-  return (
-    <ChatComposer
-      onSubmit={handleSubmit}
-      input={{ placeholder: t("chat.placeholder") }}
-    />
-  );
+  return <ChatComposer onSubmit={handleSubmit} input={{ placeholder: t("chat.placeholder") }} />;
 }
 
 export function DraftComposer() {
@@ -39,10 +28,5 @@ export function DraftComposer() {
     router.push(`/${cid}`);
   };
 
-  return (
-    <ChatComposer
-      onSubmit={handleSubmit}
-      input={{ placeholder: t("chat.placeholder") }}
-    />
-  );
+  return <ChatComposer onSubmit={handleSubmit} input={{ placeholder: t("chat.placeholder") }} />;
 }

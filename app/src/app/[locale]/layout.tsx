@@ -6,7 +6,6 @@ import { routing } from "hero-next/i18n/routing";
 import { ThemeProvider } from "hero-next/theme";
 import { Metadata, Viewport } from "next";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
@@ -43,16 +42,9 @@ export default async function RootLayout({
   return (
     <html suppressHydrationWarning lang={locale}>
       <head />
-      <body
-        className={clsx(
-          "text-foreground bg-background min-h-screen font-sans antialiased",
-        )}
-      >
+      <body className={clsx("text-foreground bg-background min-h-screen font-sans antialiased")}>
         <NextIntlClientProvider>
-          <ThemeProvider
-            theme={{ attribute: "class", defaultTheme: "dark" }}
-            locale={locale}
-          >
+          <ThemeProvider theme={{ attribute: "class", defaultTheme: "dark" }} locale={locale}>
             <div className="flex h-screen overflow-hidden">
               <AppSidebar />
               <main className="container mx-auto max-w-7xl min-w-0 flex-1 overflow-y-auto px-6 pt-16">

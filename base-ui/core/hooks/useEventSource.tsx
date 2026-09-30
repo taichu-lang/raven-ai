@@ -16,20 +16,15 @@ interface MessageMetadata {
 export function useEventSource() {
   const { addUserMessage, onStream, stopStreaming } = useChatContext();
 
-  const sendChatMessage = async (
-    content: string,
-    url: string,
-    onTurnStarted: (index: number) => void,
-  ) => {
+  const sendChatMessage = async (content: string, url: string, onTurnStarted: (index: number) => void) => {
     const req: ChatRequest = {
       text: content,
     };
 
-    // Before agent execution, a metadata event will be accepted, which belongs
-    // to each turn.
+    // Before agent execution, a metadata event will be accepted, which belongs to each turn.
     const onStart = (data: string) => {
-      // The 'assistant_id' returns from the server, and is immutable, then the
-      // message list will not be re-rendered.
+      // The 'assistant_id' returns from the server, and is immutable, then the message list will not be
+      // re-rendered.
       const meta = JSON.parse(data) as MessageMetadata;
       const idx = addUserMessage(
         {

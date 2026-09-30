@@ -42,16 +42,9 @@ export default async function RootLayout({
   return (
     <html suppressHydrationWarning lang={locale}>
       <head />
-      <body
-        className={clsx(
-          "text-foreground bg-background min-h-screen font-sans antialiased",
-        )}
-      >
+      <body className={clsx("text-foreground bg-background min-h-screen font-sans antialiased")}>
         <NextIntlClientProvider>
-          <ThemeProvider
-            theme={{ attribute: "class", defaultTheme: "dark" }}
-            locale={locale}
-          >
+          <ThemeProvider theme={{ attribute: "class", defaultTheme: "dark" }} locale={locale}>
             <div className="flex h-screen w-full overflow-hidden">
               <AppSidebar />
               <div className="container flex-1 overflow-y-auto">{children}</div>
