@@ -6,7 +6,7 @@ import { ChatComposer } from "hero-next/chat";
 import { useRouter } from "hero-next/i18n/navigation";
 import { useTranslations } from "next-intl";
 
-export function Composer({ url, onTurnStarted }: { url: string; onTurnStarted: (index: number) => void }) {
+export function Composer({ url, onTurnStarted }: { url: string; onTurnStarted: (id: string) => void }) {
   const t = useTranslations();
   const { sendChatMessage } = useEventSource();
 
