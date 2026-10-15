@@ -2,31 +2,51 @@
 
 import { useDraftMessage } from "base-ui/hooks/useDraftMessage";
 import { useEventSource } from "base-ui/hooks/useEventSource";
-import { ChatComposer } from "hero-next/chat";
+import { ChatComposer, ChatComposerValue } from "hero-next/chat";
 import { useRouter } from "hero-next/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { ActionSelector } from "./ActionSelector";
+
+function BaseChatComposer({ onSubmit }: { onSubmit: (value: ChatComposerValue) => void }) {
+  const t = useTranslations();
+  return (
+    <ChatComposer
+      onSubmit={onSubmit}
+      input={{ placeholder: t("chat.placeholder") }}
+      footActions={<ActionSelector />}
+    />
+  );
+}
 
 export function Composer({ url, onTurnStarted }: { url: string; onTurnStarted: (id: string) => void }) {
-  const t = useTranslations();
   const { sendChatMessage } = useEventSource();
 
-  const handleSubmit = (content: string) => {
-    sendChatMessage(content, url, onTurnStarted);
+  const handleSubmit = ({ text, skills }: ChatComposerValue) => {
+    sendChatMessage(
+      {
+        model: "gpt-4.1",
+        text: text,
+        metadata: {
+          skills,
+        },
+      },
+      url,
+      onTurnStarted,
+    );
   };
 
-  return <ChatComposer onSubmit={handleSubmit} input={{ placeholder: t("chat.placeholder") }} />;
+  return <BaseChatComposer onSubmit={handleSubmit} />;
 }
 
 export function DraftComposer() {
-  const t = useTranslations();
   const router = useRouter();
 
-  const handleSubmit = (content: string) => {
+  const handleSubmit = ({ skills, markdown }: ChatComposerValue) => {
     const { setDraft } = useDraftMessage.getState();
     const cid = crypto.randomUUID();
-    setDraft({ conversationID: cid, content });
+    setDraft({ conversationID: cid, content: markdown, skills });
     router.push(`/${cid}`);
   };
 
-  return <ChatComposer onSubmit={handleSubmit} input={{ placeholder: t("chat.placeholder") }} />;
+  return <BaseChatComposer onSubmit={handleSubmit} />;
 }

@@ -7,6 +7,8 @@
     "./chat": "./core/chat/index.ts",
     "./layout": "./core/layout/index.ts",
     "./hooks/*": "./core/hooks/*.tsx",
+    "./types/*": "./core/types/*.ts",
+    "./platform": "./platform/index.ts",
     "./i18n/request": "./i18n/request.ts"
   },
   "devDependencies": {

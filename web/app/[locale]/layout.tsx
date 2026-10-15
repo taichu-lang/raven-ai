@@ -1,5 +1,6 @@
 import "@/styles/globals.css";
 
+import { PlatformProvider } from "@/platform/context";
 import { AppSidebar } from "base-ui/layout";
 import clsx from "clsx";
 import { routing } from "hero-next/i18n/routing";
@@ -45,10 +46,12 @@ export default async function RootLayout({
       <body className={clsx("text-foreground bg-background min-h-screen font-sans antialiased")}>
         <NextIntlClientProvider>
           <ThemeProvider theme={{ attribute: "class", defaultTheme: "dark" }} locale={locale}>
-            <div className="flex h-screen w-full overflow-hidden">
-              <AppSidebar />
-              <div className="container flex-1 overflow-y-auto">{children}</div>
-            </div>
+            <PlatformProvider>
+              <div className="flex h-screen w-full overflow-hidden">
+                <AppSidebar />
+                <div className="flex-1 overflow-y-auto">{children}</div>
+              </div>
+            </PlatformProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

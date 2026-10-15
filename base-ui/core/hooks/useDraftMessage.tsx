@@ -1,8 +1,10 @@
+import { Skill } from "hero-next/chat";
 import { create } from "zustand";
 
 interface DraftMessage {
   content: string;
   conversationID: string;
+  skills?: Skill[];
 }
 
 interface DraftMessageValue {

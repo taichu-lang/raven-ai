@@ -3,6 +3,23 @@
   "chat": {
     "greeting": "有什么我可以帮你？",
     "placeholder": "向 Raven 提问",
-    "reliabilityTip": "内容由 AI 生成, 请注意核实"
+    "reliabilityTip": "内容由 AI 生成, 请注意核实",
+    "skills": "技能"
+  },
+  "sidebar": {
+    "newTask": "新任务",
+    "extensions": "扩展",
+    "channels": "频道",
+    "tasks": "任务",
+    "recent": "最近",
+    "profile": "个人中心",
+    "settings": "设置",
+    "signOut": "退出登录",
+    "plan": "个人免费版",
+    "preferences": "偏好设置",
+    "language": "语言",
+    "theme": "主题",
+    "themeLight": "亮色",
+    "themeDark": "暗色"
   }
 }

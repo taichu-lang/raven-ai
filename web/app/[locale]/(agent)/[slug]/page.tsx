@@ -27,7 +27,17 @@ export default function ChatPage() {
         return;
       }
 
-      sendChatMessage(message.content, `/api/chat/${slug}`, handleTurnStarted);
+      sendChatMessage(
+        {
+          model: "gpt-4.1",
+          text: message.content,
+          metadata: {
+            skills: message.skills,
+          },
+        },
+        `/api/chat/${slug}`,
+        handleTurnStarted,
+      );
     }
   }, []);
 

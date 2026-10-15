@@ -1,10 +1,14 @@
 "use client";
 
-import { Avatar, Dropdown, Label, Separator, Tabs } from "@heroui/react";
-import { Sidebar } from "hero-next/layout";
+import { Avatar, cn, Dropdown, Label, Separator } from "@heroui/react";
+import { usePreference } from "base-ui/hooks/usePreference";
+import { Conversation } from "base-ui/types/chat";
+import { usePathname, useRouter } from "hero-next/i18n/navigation";
+import { InfiniteScrollView, Item, Sidebar } from "hero-next/layout";
 import { useTheme } from "hero-next/theme";
 import {
   BlocksIcon,
+  ChevronDownIcon,
   ChevronRightIcon,
   LanguagesIcon,
   LogOutIcon,
@@ -13,23 +17,26 @@ import {
   SettingsIcon,
   SquarePenIcon,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { usePreference } from "../hooks/usePreference";
+import { useLocale, useTranslations } from "next-intl";
+import { getConversations } from "./lib";
 
 function Languages() {
+  const t = useTranslations();
+  const locale = useLocale();
+  const pathname = usePathname();
   const router = useRouter();
-  const { locale, setLocale } = usePreference();
+  const { setLocale } = usePreference();
 
   const switchLocale = (key: string) => {
-    router.push(`/${key}`);
     setLocale(key);
+    router.replace(pathname, { locale: key });
   };
 
   return (
     <Dropdown.SubmenuTrigger>
       <Dropdown.Item>
         <LanguagesIcon className="text-muted size-4 shrink-0" />
-        <Label>语言</Label>
+        <Label>{t("sidebar.language")}</Label>
         <ChevronRightIcon className="text-muted ms-auto size-4 shrink-0" />
       </Dropdown.Item>
       <Dropdown.Popover>
@@ -58,6 +65,7 @@ function Languages() {
 }
 
 function Themes() {
+  const t = useTranslations();
   const { theme, setTheme } = usePreference();
   const { setTheme: setThemeMode } = useTheme();
 
@@ -70,7 +78,7 @@ function Themes() {
     <Dropdown.SubmenuTrigger>
       <Dropdown.Item>
         <PaletteIcon className="text-muted size-4 shrink-0" />
-        <Label>主题</Label>
+        <Label>{t("sidebar.theme")}</Label>
         <ChevronRightIcon className="text-muted ms-auto size-4 shrink-0" />
       </Dropdown.Item>
       <Dropdown.Popover>
@@ -84,13 +92,13 @@ function Themes() {
             }
           }}
         >
-          <Dropdown.Item id="light" textValue="亮色">
+          <Dropdown.Item id="light" textValue={t("sidebar.themeLight")}>
             <Dropdown.ItemIndicator />
-            <Label>亮色</Label>
+            <Label>{t("sidebar.themeLight")}</Label>
           </Dropdown.Item>
-          <Dropdown.Item id="dark" textValue="暗色">
+          <Dropdown.Item id="dark" textValue={t("sidebar.themeDark")}>
             <Dropdown.ItemIndicator />
-            <Label>暗色</Label>
+            <Label>{t("sidebar.themeDark")}</Label>
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown.Popover>
@@ -99,11 +107,13 @@ function Themes() {
 }
 
 function Preferences() {
+  const t = useTranslations();
+
   return (
     <Dropdown.SubmenuTrigger>
       <Dropdown.Item>
         <PaletteIcon className="text-muted size-4 shrink-0" />
-        <Label>偏好设置</Label>
+        <Label>{t("sidebar.preferences")}</Label>
         <ChevronRightIcon className="text-muted ms-auto size-4 shrink-0" />
       </Dropdown.Item>
       <Dropdown.Popover>
@@ -117,13 +127,15 @@ function Preferences() {
 }
 
 function ProfileDropdown() {
+  const t = useTranslations();
+
   return (
     <Dropdown>
       <Dropdown.Trigger className={"hover:bg-default flex w-full items-center gap-2 rounded-2xl p-1"}>
         <Avatar size="sm">A</Avatar>
         <div className="flex flex-col text-start">
           <p className="text-sm">leo</p>
-          <p className="text-xs text-gray-500">个人免费版</p>
+          <p className="text-xs text-gray-500">{t("sidebar.plan")}</p>
         </div>
       </Dropdown.Trigger>
       <Dropdown.Popover className={"w-64"}>
@@ -138,16 +150,16 @@ function ProfileDropdown() {
           selectionMode="single"
           onAction={(key) => console.log(key)}
         >
-          <Dropdown.Item href="/profile">个人中心</Dropdown.Item>
+          <Dropdown.Item href="/profile">{t("sidebar.profile")}</Dropdown.Item>
           <Preferences />
           <Dropdown.Item href="/settings">
             <SettingsIcon className="text-muted size-4 shrink-0" />
-            设置
+            {t("sidebar.settings")}
           </Dropdown.Item>
           <Separator className="my-0.5" />
           <Dropdown.Item className="text-danger hover:bg-danger-soft-hover">
             <LogOutIcon className="text-danger size-4 shrink-0" />
-            退出登录
+            {t("sidebar.signOut")}
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown.Popover>
@@ -155,39 +167,116 @@ function ProfileDropdown() {
   );
 }
 
+function Header() {
+  return <Sidebar.Header>Raven</Sidebar.Header>;
+}
+
+interface ExtensionMenu {
+  id: string;
+}
+
+function Body() {
+  const t = useTranslations();
+
+  return (
+    <InfiniteScrollView<Conversation | ExtensionMenu>
+      className="px-2"
+      sections={[
+        {
+          key: "extensions",
+          getItemKey: (item) => {
+            const menu = item as ExtensionMenu;
+            return menu.id;
+          },
+          fetch: async () => {
+            return [{ id: "extensions" }];
+          },
+          collapsible: false,
+          showWhenEmpty: true,
+        },
+        {
+          key: "recent",
+          getItemKey: (item) => {
+            const conversation = item as Conversation;
+            return conversation.id.toString();
+          },
+          fetch: async ({ after, limit, signal }) => {
+            const from = after ? Number(after) : 0;
+            return await getConversations(from, limit, signal);
+          },
+          collapsible: true,
+          showWhenEmpty: false,
+        },
+      ]}
+      renderItem={(item, meta) => {
+        if (meta.sectionKey === "extensions") {
+          return (
+            <div className="flex flex-col">
+              <Sidebar.Item href="/extensions" icon={<BlocksIcon className="size-4 shrink-0" />}>
+                {t("sidebar.extensions")}
+              </Sidebar.Item>
+              <Sidebar.Item href="/channels" icon={<MonitorSmartphoneIcon className="size-4 shrink-0" />}>
+                {t("sidebar.channels")}
+              </Sidebar.Item>
+              <div className="mt-4">
+                <p className="px-2 text-sm">{t("sidebar.tasks")}</p>
+                <Separator className="my-2" />
+              </div>
+            </div>
+          );
+        }
+
+        const conversation = item as Conversation;
+        return (
+          <Item href={`/${conversation.id}`}>
+            <Item.Content>{conversation.title}</Item.Content>
+          </Item>
+        );
+      }}
+      renderHeader={(selectionKey, meta) => {
+        if (selectionKey === "recent") {
+          return <SectionHeader title={t("sidebar.recent")} collapsed={meta.collapsed} onClick={meta.toggle} />;
+        }
+
+        return null;
+      }}
+    />
+  );
+}
+
+function SectionHeader({
+  title,
+  collapsed,
+  onClick,
+}: {
+  title: React.ReactNode;
+  collapsed: boolean;
+  onClick?: () => void;
+}) {
+  return (
+    <div
+      className={"text-muted bg-background flex w-full cursor-pointer items-center gap-4 px-2 pb-1.75 text-xs"}
+      data-collapsed={collapsed ? "true" : undefined}
+      onClick={onClick}
+    >
+      {title}
+      <ChevronDownIcon className={cn("size-4 transition-transform duration-200", collapsed && "-rotate-90")} />
+    </div>
+  );
+}
+
 export function AppSidebar() {
+  const t = useTranslations();
+
   return (
     <Sidebar>
-      <Sidebar.Header>Raven</Sidebar.Header>
-      <nav className="mx-2 mt-2">
-        <Sidebar.Item href="/" icon={<SquarePenIcon className="size-4" />}>
-          新任务
+      <Header />
+      <nav className="mt-2 flex justify-center px-2">
+        <Sidebar.Item href="/" icon={<SquarePenIcon className="size-4 shrink-0" />}>
+          {t("sidebar.newTask")}
         </Sidebar.Item>
       </nav>
-      <Sidebar.Body>
-        <Sidebar.Item href="/extensions" icon={<BlocksIcon className="size-4" />}>
-          扩展
-        </Sidebar.Item>
-        <Sidebar.Item href="/channels" icon={<MonitorSmartphoneIcon className="size-4" />}>
-          频道
-        </Sidebar.Item>
-        <Tabs variant="secondary" className="mt-4">
-          <Tabs.ListContainer>
-            <Tabs.List aria-label="Options">
-              <Tabs.Tab id={"tasks"} className="w-fit">
-                任务
-                <Tabs.Indicator className="bg-accent-foreground" />
-              </Tabs.Tab>
-              <Tabs.Tab id={"channels"} className="w-fit">
-                频道
-                <Tabs.Indicator className="bg-accent-foreground" />
-              </Tabs.Tab>
-            </Tabs.List>
-          </Tabs.ListContainer>
-          <Tabs.Panel id={"tasks"}>任务</Tabs.Panel>
-          <Tabs.Panel id="channels">频道</Tabs.Panel>
-        </Tabs>
-      </Sidebar.Body>
+      <Body />
       <Sidebar.Footer>
         <ProfileDropdown />
       </Sidebar.Footer>

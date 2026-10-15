@@ -62,3 +62,4 @@ bun.lockb
 # heroui-agents-md
 .heroui-docs/
 .marscode/
+.env.development

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 @import "@heroui/styles";
 @import "hero-next/base.css";
 @source "../node_modules/hero-next/core";
