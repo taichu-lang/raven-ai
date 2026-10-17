@@ -1,10 +1,11 @@
 "use client";
 
 import { Avatar, cn, Dropdown, Label, Separator } from "@heroui/react";
+import { useConversationScroller } from "base-ui/hooks/useConversationMutations";
 import { usePreference } from "base-ui/hooks/usePreference";
 import { Conversation } from "base-ui/types/chat";
 import { usePathname, useRouter } from "hero-next/i18n/navigation";
-import { InfiniteScrollView, Item, Sidebar } from "hero-next/layout";
+import { InfiniteScrollView, InfiniteScrollViewHandle, Item, Sidebar } from "hero-next/layout";
 import { useTheme } from "hero-next/theme";
 import {
   BlocksIcon,
@@ -18,6 +19,7 @@ import {
   SquarePenIcon,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useRef } from "react";
 import { getConversations } from "./lib";
 
 function Languages() {
@@ -177,9 +179,18 @@ interface ExtensionMenu {
 
 function Body() {
   const t = useTranslations();
+  const ref = useRef<InfiniteScrollViewHandle | null>(null);
+  const { setScrollRef } = useConversationScroller();
+
+  useEffect(() => {
+    if (ref.current) {
+      setScrollRef(ref);
+    }
+  }, [setScrollRef]);
 
   return (
     <InfiniteScrollView<Conversation | ExtensionMenu>
+      handleRef={ref}
       className="px-2"
       sections={[
         {
@@ -228,7 +239,7 @@ function Body() {
 
         const conversation = item as Conversation;
         return (
-          <Item href={`/${conversation.id}`}>
+          <Item href={`/${conversation.conversation_id}`}>
             <Item.Content>{conversation.title}</Item.Content>
           </Item>
         );

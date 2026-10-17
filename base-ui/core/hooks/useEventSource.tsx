@@ -1,13 +1,16 @@
 "use client";
 
 import { fetchEventSource } from "@microsoft/fetch-event-source";
+import { Conversation } from "base-ui/types/chat";
 import { useChatContext } from "hero-next/blocks/chat";
-import { ResponseChunk, Skill, TextContent } from "hero-next/chat";
+import { BaseMessage, Skill } from "hero-next/chat";
+import { useConversationMutations } from "./useConversationMutations";
 
 // One turn represents one conversation round, begin with a user message.
 // One turn is consists of one or more iterations, ex: llm -> function -> llm.
 // So one user input might receive multiple assistant messages.
 const EventType = {
+  ConversationStart: "conversation.start",
   TurnStart: "turn.start",
   Delta: "llm.delta",
   IterationDone: "llm.complete",
@@ -25,30 +28,31 @@ interface ChatRequest {
 }
 
 interface TurnStartEventData {
-  input: ResponseChunk[];
+  input: BaseMessage[];
 }
 
 export function useEventSource() {
   const { setStatus, addUserMessage, onStream, stopStreaming } = useChatContext();
+  const { onConversationCreated } = useConversationMutations();
 
   const sendChatMessage = async (request: ChatRequest, url: string, onTurnStarted: (id: string) => void) => {
+    const onConversationStart = (data: string) => {
+      const c = JSON.parse(data) as Conversation;
+      onConversationCreated(c);
+    };
+
     // Before agent execution, a metadata event will be accepted, which belongs to each turn.
-    const onStart = (data: string) => {
+    const onTurnStart = (data: string) => {
       // The 'assistant_id' returns from the server, and is immutable, then the message list will not be
       // re-rendered.
       const meta = JSON.parse(data) as TurnStartEventData;
       const message = meta.input[0];
-      const content = message.contents[0] as TextContent;
-      addUserMessage({
-        message_id: message.id,
-        role: "user",
-        content: content.text,
-      });
+      addUserMessage(message);
       onTurnStarted?.(message.id);
     };
 
     const onDelta = (data: string) => {
-      const message = JSON.parse(data) as ResponseChunk;
+      const message = JSON.parse(data) as BaseMessage;
       for (const content of message.contents) {
         if (content.type === "text") {
           onStream(message.id, content.text);
@@ -57,18 +61,8 @@ export function useEventSource() {
     };
 
     const onAssistantComplete = (data: string) => {
-      const message = JSON.parse(data) as ResponseChunk;
-      let text = "";
-      for (const content of message.contents) {
-        if (content.type === "text") {
-          text += content.text;
-        }
-      }
-      stopStreaming("done", {
-        message_id: message.id,
-        role: message.role,
-        content: text,
-      });
+      const message = JSON.parse(data) as BaseMessage;
+      stopStreaming("done", message);
     };
 
     const onEnd = () => {
@@ -92,8 +86,12 @@ export function useEventSource() {
               setStatus("idle");
               break;
 
+            case EventType.ConversationStart:
+              onConversationStart(ev.data);
+              break;
+
             case EventType.TurnStart:
-              onStart(ev.data);
+              onTurnStart(ev.data);
               break;
 
             case EventType.Delta:
