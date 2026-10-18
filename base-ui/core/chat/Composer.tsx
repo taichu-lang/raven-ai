@@ -2,6 +2,7 @@
 
 import { useDraftMessage } from "base-ui/hooks/useDraftMessage";
 import { useEventSource } from "base-ui/hooks/useEventSource";
+import { useRavenPlatform } from "base-ui/platform";
 import { ChatComposer, ChatComposerValue } from "hero-next/chat";
 import { useRouter } from "hero-next/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -40,12 +41,13 @@ export function Composer({ url, onTurnStarted }: { url: string; onTurnStarted: (
 
 export function DraftComposer() {
   const router = useRouter();
+  const { conversationRouter } = useRavenPlatform();
 
   const handleSubmit = ({ skills, markdown }: ChatComposerValue) => {
     const { setDraft } = useDraftMessage.getState();
     const cid = crypto.randomUUID();
     setDraft({ conversationID: cid, content: markdown, skills });
-    router.push(`/${cid}`);
+    router.push(conversationRouter(cid));
   };
 
   return <BaseChatComposer onSubmit={handleSubmit} />;

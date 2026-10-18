@@ -55,9 +55,15 @@ export function useConversationMutations() {
     [setConversation, reloadRecent],
   );
 
+  const clearConversation = useCallback(
+    () => setConversation({ id: 0, conversation_id: "", title: "", metadata: {}, created_at: 0 }),
+    [setConversation],
+  );
+
   return {
     conversation,
     setConversation,
+    clearConversation,
     onConversationCreated,
   };
 }

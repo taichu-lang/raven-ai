@@ -8,6 +8,11 @@ export type DeviceType = "web" | "desktop";
 export interface RavenPlatform {
   device: DeviceType;
   skillsLoader: SkillsLoader;
+  // Declares the base url using in fetch requests.
+  baseUrl: string;
+  // Builds the in-app path of a conversation. Static export (desktop) cannot enumerate dynamic segments
+  // (ex: /[slug]).
+  conversationRouter: (id: string) => string;
 }
 
 const noopLoader: SkillsLoader = {
@@ -17,6 +22,9 @@ const noopLoader: SkillsLoader = {
 const RavenPlatformContext = createContext<RavenPlatform>({
   device: "web",
   skillsLoader: noopLoader,
+  // We will use next.js api routers, so base url should be empty.
+  baseUrl: "",
+  conversationRouter: (id) => `/${id}`,
 });
 
 export const useRavenPlatform = () => useContext(RavenPlatformContext);

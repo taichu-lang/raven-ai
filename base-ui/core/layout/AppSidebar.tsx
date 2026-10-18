@@ -3,6 +3,7 @@
 import { Avatar, cn, Dropdown, Label, Separator } from "@heroui/react";
 import { useConversationScroller } from "base-ui/hooks/useConversationMutations";
 import { usePreference } from "base-ui/hooks/usePreference";
+import { useRavenPlatform } from "base-ui/platform";
 import { Conversation } from "base-ui/types/chat";
 import { usePathname, useRouter } from "hero-next/i18n/navigation";
 import { InfiniteScrollView, InfiniteScrollViewHandle, Item, Sidebar } from "hero-next/layout";
@@ -181,6 +182,7 @@ function Body() {
   const t = useTranslations();
   const ref = useRef<InfiniteScrollViewHandle | null>(null);
   const { setScrollRef } = useConversationScroller();
+  const { baseUrl, conversationRouter } = useRavenPlatform();
 
   useEffect(() => {
     if (ref.current) {
@@ -213,7 +215,7 @@ function Body() {
           },
           fetch: async ({ after, limit, signal }) => {
             const from = after ? Number(after) : 0;
-            return await getConversations(from, limit, signal);
+            return await getConversations(baseUrl, from, limit, signal);
           },
           collapsible: true,
           showWhenEmpty: false,
@@ -239,7 +241,7 @@ function Body() {
 
         const conversation = item as Conversation;
         return (
-          <Item href={`/${conversation.conversation_id}`}>
+          <Item href={conversationRouter(conversation.conversation_id)}>
             <Item.Content>{conversation.title}</Item.Content>
           </Item>
         );

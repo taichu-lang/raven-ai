@@ -118,6 +118,9 @@ export function useEventSource() {
           // throw the error, otherwise sse connection will be reconnected.
           throw err;
         },
+        // Do not close the connection when the page is hidden, user might open put the page in the
+        // background, do something else, and return to the page to check the result.
+        openWhenHidden: true,
       });
     } catch (err) {
       // handle the error thrown by `onerror` callback.

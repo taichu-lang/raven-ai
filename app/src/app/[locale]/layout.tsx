@@ -1,5 +1,6 @@
 import "@/styles/globals.css";
 
+import { PlatformProvider } from "@/platform/context";
 import { AppSidebar } from "base-ui/layout";
 import clsx from "clsx";
 import { routing } from "hero-next/i18n/routing";
@@ -10,7 +11,7 @@ import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Raven AI",
-  description: "Desktop application of Raven AI Agent.",
+  description: "Application for Raven AI.",
   icons: {
     icon: "/favicon.ico",
   },
@@ -45,12 +46,12 @@ export default async function RootLayout({
       <body className={clsx("text-foreground bg-background min-h-screen font-sans antialiased")}>
         <NextIntlClientProvider>
           <ThemeProvider theme={{ attribute: "class", defaultTheme: "dark" }} locale={locale}>
-            <div className="flex h-screen overflow-hidden">
-              <AppSidebar />
-              <main className="container mx-auto max-w-7xl min-w-0 flex-1 overflow-y-auto px-6 pt-16">
-                {children}
-              </main>
-            </div>
+            <PlatformProvider>
+              <div className="flex h-screen w-full overflow-hidden">
+                <AppSidebar />
+                <div className="flex-1 overflow-y-auto">{children}</div>
+              </div>
+            </PlatformProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

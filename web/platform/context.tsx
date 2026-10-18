@@ -5,7 +5,9 @@ import { webSkillsLoader } from "./skills";
 
 export function PlatformProvider({ children }: { children: React.ReactNode }) {
   return (
-    <RavenPlatformProvider value={{ device: "web", skillsLoader: webSkillsLoader }}>
+    <RavenPlatformProvider
+      value={{ baseUrl: "", device: "web", skillsLoader: webSkillsLoader, conversationRouter: (id) => `/${id}` }}
+    >
       {children}
     </RavenPlatformProvider>
   );
