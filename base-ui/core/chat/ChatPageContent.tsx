@@ -57,7 +57,6 @@ export function ChatPageContent({ slug }: { slug: string }) {
       clearDraft();
       sendChatMessage(
         {
-          model: "gpt-4.1",
           text: message.content,
           metadata: {
             skills: message.skills,

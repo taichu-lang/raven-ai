@@ -4,7 +4,9 @@
     "greeting": "有什么我可以帮你？",
     "placeholder": "向 Raven 提问",
     "reliabilityTip": "内容由 AI 生成, 请注意核实",
-    "skills": "技能"
+    "skills": "技能",
+    "modelPreference": "模型偏好",
+    "modelAuto": "自动"
   },
   "sidebar": {
     "newTask": "新任务",
