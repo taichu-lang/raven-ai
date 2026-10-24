@@ -2,8 +2,7 @@
 
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { Conversation } from "base-ui/types/chat";
-import { useChatContext } from "hero-next/blocks/chat";
-import { BaseMessage, Skill, ToolCallContent, ToolResultContent } from "hero-next/chat";
+import { BaseMessage, Skill, ToolCallContent, ToolResultContent, useChatContext } from "hero-next/chat";
 import { useConversationMutations } from "./useConversationMutations";
 import { usePreference } from "./usePreference";
 
@@ -35,7 +34,16 @@ interface TurnStartEventData {
 }
 
 export function useEventSource() {
-  const { setStatus, addUserMessage, onStream, onToolCall, onToolResult, onStreamDone } = useChatContext();
+  const {
+    setStatus,
+    addUserMessage,
+    onStream,
+    onToolCall,
+    onToolResult,
+    onStreamDone,
+    beginRequest,
+    endRequest,
+  } = useChatContext();
   const { onConversationCreated } = useConversationMutations();
   const model = usePreference((s) => s.model);
 
@@ -117,6 +125,13 @@ export function useEventSource() {
     // event: llm.complete, data: {"id":"resp_0362e91557a3ba07006ac45f19f79087d09eecad0a0426e5a4","role":"assistant","contents":[{"text":"Hello! How can I help you today? 😊","type":"text"}]}
     // event: tool.result, data: {"id":"msg_0362e91557a3ba07006ac45f1a9b9887d0b9ffe543b0ccedaf","role":"tool","contents":[{"type":"tool_result","tool_call_id":"call_01","name":"search","result":"..."}]}
     // event: turn.end, data: [DONE]
+
+    // The controller is created and registered in the chat store, not passed in by the caller:
+    // its lifetime must follow the request (which spans the landing page -> conversation page
+    // navigation for the first turn), not the composer component that triggered the submit.
+    // beginRequest also aborts any previous in-flight request, and the page's cancel button
+    // (cancelRequest) aborts this one through the same store.
+    const abort = beginRequest();
     try {
       setStatus("sending");
       await fetchEventSource(url, {
@@ -126,11 +141,12 @@ export function useEventSource() {
           ...request,
           model,
         }),
+        signal: abort.signal,
         onmessage(ev) {
           switch (ev.event) {
             case "error":
               console.error("on error: ", ev.data);
-              setStatus("error");
+              setStatus("idle");
               break;
 
             case EventType.ConversationStart:
@@ -180,7 +196,12 @@ export function useEventSource() {
     } catch (err) {
       // handle the error thrown by `onerror` callback.
       console.error("on error: ", err);
-      setStatus("error");
+      setStatus("idle");
+    } finally {
+      // The stream settled (turn.end, error, or aborted by cancelRequest, which resolves
+      // without throwing). Unregister the controller; the identity check inside endRequest
+      // makes this a no-op if a newer request has already superseded this one.
+      endRequest(abort);
     }
   };
 

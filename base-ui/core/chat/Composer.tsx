@@ -4,8 +4,7 @@ import { Chip } from "@heroui/react";
 import { useDraftMessage } from "base-ui/hooks/useDraftMessage";
 import { useEventSource } from "base-ui/hooks/useEventSource";
 import { useRavenPlatform } from "base-ui/platform";
-import { useChatContext } from "hero-next/blocks/chat";
-import { ChatComposer, ChatComposerDrawer, ChatComposerValue } from "hero-next/chat";
+import { ChatComposer, ChatComposerDrawer, ChatComposerValue, useChatContext } from "hero-next/chat";
 import { Loading } from "hero-next/effects";
 import { useRouter } from "hero-next/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -55,27 +54,10 @@ function NotificationDrawer() {
   return null;
 }
 
-function BaseChatComposer({
-  onSubmit,
-  enableDrawer = true,
-}: {
-  onSubmit: (value: ChatComposerValue) => void;
-  enableDrawer?: boolean;
-}) {
-  const t = useTranslations();
-  return (
-    <ChatComposer
-      onSubmit={onSubmit}
-      input={{ placeholder: t("chat.placeholder") }}
-      drawer={enableDrawer ? <NotificationDrawer /> : null}
-      footActions={<ActionSelector />}
-      footContext={<ModelSelector />}
-    />
-  );
-}
-
 export function Composer({ url, onTurnStarted }: { url: string; onTurnStarted: (id: string) => void }) {
+  const t = useTranslations();
   const { sendChatMessage } = useEventSource();
+  const { status } = useChatContext();
 
   const handleSubmit = ({ text, skills }: ChatComposerValue) => {
     sendChatMessage(
@@ -90,14 +72,27 @@ export function Composer({ url, onTurnStarted }: { url: string; onTurnStarted: (
     );
   };
 
-  return <BaseChatComposer onSubmit={handleSubmit} />;
+  return (
+    <ChatComposer
+      onSubmit={handleSubmit}
+      input={{ placeholder: t("chat.placeholder") }}
+      drawer={<NotificationDrawer />}
+      footActions={<ActionSelector />}
+      footContext={<ModelSelector />}
+      disabled={status !== "idle"}
+    />
+  );
 }
 
 export function DraftComposer() {
+  const t = useTranslations();
   const router = useRouter();
   const { conversationRouter } = useRavenPlatform();
 
   const handleSubmit = ({ skills, markdown }: ChatComposerValue) => {
+    // Store the draft and navigate; the slug page's ChatPageContent sends it. No request
+    // starts here, so no AbortController is involved — the controller is created by
+    // sendChatMessage inside the slug page's ChatContext, where the cancel button can reach it.
     const { setDraft } = useDraftMessage.getState();
     const cid = crypto.randomUUID();
     setDraft({ conversationID: cid, content: markdown, skills });
@@ -105,5 +100,12 @@ export function DraftComposer() {
   };
 
   // No ChatContext here.
-  return <BaseChatComposer onSubmit={handleSubmit} enableDrawer={false} />;
+  return (
+    <ChatComposer
+      onSubmit={handleSubmit}
+      input={{ placeholder: t("chat.placeholder") }}
+      footActions={<ActionSelector />}
+      footContext={<ModelSelector />}
+    />
+  );
 }

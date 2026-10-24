@@ -5,12 +5,8 @@ import { useConversationMutations } from "base-ui/hooks/useConversationMutations
 import { useDraftMessage } from "base-ui/hooks/useDraftMessage";
 import { useEventSource } from "base-ui/hooks/useEventSource";
 import { useRavenPlatform } from "base-ui/platform";
-import {
-  ChatMessageList,
-  ChatMessageListHandler,
-  ScrollBottomButton,
-  useChatContext,
-} from "hero-next/blocks/chat";
+import { ChatMessageList, ChatMessageListHandler, ScrollBottomButton } from "hero-next/blocks/chat";
+import { useChatContext } from "hero-next/chat";
 import { useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
@@ -52,7 +48,9 @@ export function ChatPageContent({ slug }: { slug: string }) {
 
     const { message, clearDraft } = useDraftMessage.getState();
     // A matching draft means the message was submitted from the landing page, which only stores it
-    // and navigates here; the conversation itself is created by this first turn.
+    // and navigates here; the conversation itself is created by this first turn. sendChatMessage
+    // registers the request's AbortController in this page's ChatContext, so the cancel button
+    // below works for the first turn even though it was submitted by another page's composer.
     if (message?.conversationID === slug) {
       clearDraft();
       sendChatMessage(
