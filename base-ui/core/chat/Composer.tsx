@@ -10,10 +10,26 @@ import { useRouter } from "hero-next/i18n/navigation";
 import { useTranslations } from "next-intl";
 import React from "react";
 import { ActionSelector } from "./ActionSelector";
+import { ConfirmationPanel } from "./ConfirmationPanel";
 import { ModelSelector } from "./ModelSelector";
 
-function NotificationDrawer() {
-  const { status, runningToolCalls } = useChatContext();
+function NotificationDrawer({ url }: { url: string }) {
+  const { status, runningToolCalls, confirmation } = useChatContext();
+  const { sendChatMessage } = useEventSource();
+
+  // Human-in-the-loop: the agent is waiting for the user to answer its questions.
+  // Only a single HumanConfirmation is supported for now.
+  if (status === "approval" && confirmation.length > 0) {
+    return (
+      <ChatComposerDrawer>
+        <ConfirmationPanel
+          confirmation={confirmation[0]}
+          // Resume the paused turn: same endpoint, no new user message, only the answers.
+          onSubmit={(answers) => sendChatMessage({ resume: { id: confirmation[0].id, name: confirmation[0].name, answers } }, url)}
+        />
+      </ChatComposerDrawer>
+    );
+  }
 
   let node: React.ReactNode = null;
   switch (status) {
@@ -76,7 +92,7 @@ export function Composer({ url, onTurnStarted }: { url: string; onTurnStarted: (
     <ChatComposer
       onSubmit={handleSubmit}
       input={{ placeholder: t("chat.placeholder") }}
-      drawer={<NotificationDrawer />}
+      drawer={<NotificationDrawer url={url} />}
       footActions={<ActionSelector />}
       footContext={<ModelSelector />}
       disabled={status !== "idle"}

@@ -2,7 +2,14 @@
 
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { Conversation } from "base-ui/types/chat";
-import { BaseMessage, Skill, ToolCallContent, ToolResultContent, useChatContext } from "hero-next/chat";
+import {
+  BaseMessage,
+  QuestionToolArgs,
+  Skill,
+  ToolCallContent,
+  ToolResultContent,
+  useChatContext,
+} from "hero-next/chat";
 import { useConversationMutations } from "./useConversationMutations";
 import { usePreference } from "./usePreference";
 
@@ -17,16 +24,28 @@ const EventType = {
   ToolCall: "tool.call",
   ToolResult: "tool.result",
   TurnEnd: "turn.end",
+  HumanInLoop: "runtime.hitl",
 } as const;
 
 interface ChatRequestMeta {
   skills?: Skill[];
 }
 
+// The user's answers to a pending question tool call.
+interface Resumption {
+  // The id and name of the tool call that asked the questions.
+  id: string;
+  name: string;
+  // question id -> the selected option label.
+  answers: Record<string, string>;
+}
+
+// A request either starts a new turn (text) or resumes a turn paused by human-in-the-loop (resume).
 interface ChatRequest {
-  text: string;
+  text?: string;
+  metadata?: ChatRequestMeta;
+  resume?: Resumption;
   model: string;
-  metadata: ChatRequestMeta;
 }
 
 interface TurnStartEventData {
@@ -43,6 +62,7 @@ export function useEventSource() {
     onStreamDone,
     beginRequest,
     endRequest,
+    onConfirmation,
   } = useChatContext();
   const { onConversationCreated } = useConversationMutations();
   const model = usePreference((s) => s.model);
@@ -72,7 +92,7 @@ export function useEventSource() {
   const sendChatMessage = async (
     request: Omit<ChatRequest, "model">,
     url: string,
-    onTurnStarted: (id: string) => void,
+    onTurnStarted?: (id: string) => void,
   ) => {
     const onConversationStart = (data: string) => {
       const c = JSON.parse(data) as Conversation;
@@ -84,8 +104,11 @@ export function useEventSource() {
       // The 'assistant_id' returns from the server, and is immutable, then the message list will not be
       // re-rendered.
       const meta = JSON.parse(data) as TurnStartEventData;
-      addUserMessage(meta.messages);
-      onTurnStarted?.(meta.messages[0].id);
+      // A resumed turn carries no new user message.
+      if (meta.messages?.length) {
+        addUserMessage(meta.messages);
+        onTurnStarted?.(meta.messages[0].id);
+      }
     };
 
     const onDelta = (data: string) => {
@@ -118,7 +141,29 @@ export function useEventSource() {
     };
 
     const onEnd = () => {
+      // The agent will send turn.end even if an approval is pending, as resources bound to this turn should
+      // be released. After the approval is processed, the turn will be resumed.
       setStatus("idle");
+    };
+
+    const onHumanConfirmation = (data: string) => {
+      const message = JSON.parse(data) as ToolCallContent[];
+      const confirmation = message.map((m) => {
+        // The tool arguments may double-encode `questions` as a JSON string instead of an
+        // array (JSON.parse only decodes one level), so normalize it here and let consumers
+        // always see QuestionToolArgs.
+        const args = JSON.parse(m.arguments) as { questions: QuestionToolArgs["questions"] | string };
+        const questions =
+          typeof args.questions === "string"
+            ? (JSON.parse(args.questions) as QuestionToolArgs["questions"])
+            : args.questions;
+        return {
+          id: m.id,
+          name: m.name,
+          arguments: { questions },
+        };
+      });
+      onConfirmation(confirmation);
     };
 
     // event: llm.delta, data: {"id":"msg_0362e91557a3ba07006ac45f1a9b9887d0b9ffe543b0ccedaf","role":"assistant","contents":[{"text":"Hello","type":"text"}]}
@@ -133,6 +178,10 @@ export function useEventSource() {
     // (cancelRequest) aborts this one through the same store.
     const abort = beginRequest();
     try {
+      if (request.resume) {
+        // setStatus ignores changes while in "approval", so dismiss the pending confirmation first.
+        onConfirmation([]);
+      }
       setStatus("sending");
       await fetchEventSource(url, {
         method: "POST",
@@ -175,6 +224,10 @@ export function useEventSource() {
 
             case EventType.TurnEnd:
               onEnd();
+              break;
+
+            case EventType.HumanInLoop:
+              onHumanConfirmation(ev.data);
               break;
 
             default:
