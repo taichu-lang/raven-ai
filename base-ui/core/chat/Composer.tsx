@@ -25,7 +25,9 @@ function NotificationDrawer({ url }: { url: string }) {
         <ConfirmationPanel
           confirmation={confirmation[0]}
           // Resume the paused turn: same endpoint, no new user message, only the answers.
-          onSubmit={(answers) => sendChatMessage({ resume: { id: confirmation[0].id, name: confirmation[0].name, answers } }, url)}
+          onSubmit={(answers) =>
+            sendChatMessage({ resume: { id: confirmation[0].id, name: confirmation[0].name, answers } }, url)
+          }
         />
       </ChatComposerDrawer>
     );
@@ -39,6 +41,10 @@ function NotificationDrawer({ url }: { url: string }) {
 
     case "sending":
       node = "Agent初始化";
+      break;
+
+    case "reasoning":
+      node = "思考中";
       break;
 
     case "streaming":
@@ -75,10 +81,11 @@ export function Composer({ url, onTurnStarted }: { url: string; onTurnStarted: (
   const { sendChatMessage } = useEventSource();
   const { status } = useChatContext();
 
-  const handleSubmit = ({ text, skills }: ChatComposerValue) => {
+  const handleSubmit = ({ markdown, skills }: ChatComposerValue) => {
     sendChatMessage(
       {
-        text: text,
+        // markdown inline each skill as `<skill>` xml, same as the draft (first message) path.
+        text: markdown,
         metadata: {
           skills,
         },

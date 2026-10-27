@@ -1,5 +1,27 @@
 # Raven AI Application
 
+## Quick Start
+
+This project uses [bun](https://bun.sh) as its package manager.
+
+1. **Start the agent backend.** The backend lives in a separate repository: [taichu-lang/raven-agents](https://github.com/taichu-lang/raven-agents). Clone it and start it by following its README.
+
+2. **Configure the web app.** Create `web/.env.development` and point `SERVER_URL` at the running backend:
+
+   ```env
+   SERVER_URL=http://localhost:8001
+   ```
+
+   (Adjust the port to whatever the backend is listening on.)
+
+3. **Install dependencies and run the web app:**
+
+   ```sh
+   cd web
+   bun install
+   bun dev
+   ```
+
 ## Notes
 
 ### No dynamic routes in the Tauri app
