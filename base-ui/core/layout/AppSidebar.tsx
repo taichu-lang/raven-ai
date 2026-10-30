@@ -18,6 +18,7 @@ import {
   PaletteIcon,
   SettingsIcon,
   SquarePenIcon,
+  User2Icon,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
@@ -134,26 +135,30 @@ function ProfileDropdown() {
 
   return (
     <Dropdown>
-      <Dropdown.Trigger className={"hover:bg-default flex w-full items-center gap-2 rounded-2xl p-1"}>
-        <Avatar size="sm">A</Avatar>
+      <Dropdown.Trigger className={"hover:bg-default flex w-full items-center gap-2 rounded-xl p-1"}>
+        <Avatar size="sm" color="danger" variant="soft">
+          <Avatar.Fallback>LE</Avatar.Fallback>
+        </Avatar>
         <div className="flex flex-col text-start">
           <p className="text-sm">leo</p>
-          <p className="text-xs text-gray-500">{t("sidebar.plan")}</p>
+          <p className="text-muted text-xs">{t("sidebar.plan")}</p>
         </div>
       </Dropdown.Trigger>
       <Dropdown.Popover className={"w-64"}>
         <div className="mx-3 mt-3 mb-1 flex items-center gap-2 text-sm">
-          <Avatar size="sm" className="h-6 w-6">
-            A
+          <Avatar size="sm" variant="soft" color="danger">
+            <Avatar.Fallback>LE</Avatar.Fallback>
           </Avatar>
-          leo
+          leo@gmail.com
         </div>
         <Dropdown.Menu
           onSelectionChange={(keys) => console.log(keys)}
           selectionMode="single"
           onAction={(key) => console.log(key)}
         >
-          <Dropdown.Item href="/profile">{t("sidebar.profile")}</Dropdown.Item>
+          <Dropdown.Item href="/profile">
+            <User2Icon className="text-muted size-4 shrink-0" /> {t("sidebar.profile")}
+          </Dropdown.Item>
           <Preferences />
           <Dropdown.Item href="/settings">
             <SettingsIcon className="text-muted size-4 shrink-0" />

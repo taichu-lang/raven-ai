@@ -7,11 +7,7 @@ import { DemoBlock, ShowcaseSection } from "../_components/showcase-section";
 
 export function ButtonsSection() {
   return (
-    <ShowcaseSection
-      id="buttons"
-      title="Buttons"
-      description="Button / ButtonGroup / ToggleButton"
-    >
+    <ShowcaseSection id="buttons" title="Buttons" description="Button / ButtonGroup / ToggleButton">
       <DemoBlock title="Variants">
         <Button>Primary</Button>
         <Button variant="secondary">Secondary</Button>
@@ -20,6 +16,15 @@ export function ButtonsSection() {
         <Button variant="ghost">Ghost</Button>
         <Button variant="danger">Danger</Button>
         <Button variant="danger-soft">Danger Soft</Button>
+        <Button variant="outline" className={"bg-warning text-warning-foreground hover:bg-warning-hover"}>
+          Warning
+        </Button>
+        <Button
+          variant="outline"
+          className={"bg-warning-soft text-warning-soft-foreground hover:bg-warning-soft-hover"}
+        >
+          Warning Soft
+        </Button>
       </DemoBlock>
 
       <DemoBlock title="Sizes">
@@ -39,9 +44,7 @@ export function ButtonsSection() {
       </DemoBlock>
 
       <DemoBlock title="Loading">
-        <Button isPending>
-          {({ isPending }) => <>{isPending ? "Loading…" : "Submit"}</>}
-        </Button>
+        <Button isPending>{({ isPending }) => <>{isPending ? "Loading…" : "Submit"}</>}</Button>
       </DemoBlock>
 
       <DemoBlock title="Button Group">
@@ -73,9 +76,7 @@ function ToggleButtonDemo() {
       <ToggleButton isSelected={isSelected} onChange={setIsSelected}>
         {isSelected ? "Liked" : "Like"}
       </ToggleButton>
-      <span className="text-sm text-muted">
-        State: {isSelected ? "selected" : "unselected"}
-      </span>
+      <span className="text-muted text-sm">State: {isSelected ? "selected" : "unselected"}</span>
     </div>
   );
 }

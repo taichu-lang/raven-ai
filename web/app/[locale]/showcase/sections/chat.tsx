@@ -5,6 +5,7 @@ import { ModelSelector } from "hero-next/blocks/chat";
 import {
   ChatComposeButton,
   ChatComposer,
+  ChatComposerDrawer,
   ChatMessage,
   ChatMessageBubble,
   ChatMessageContextProvider,
@@ -22,25 +23,30 @@ export function ChatSection() {
             <ChatMessageContextProvider
               message={{
                 role: "user",
-                message_id: "1",
-                content: "Hi, how are you today?",
+                id: "1",
+                contents: [
+                  {
+                    type: "text",
+                    text: "Hi, how are you today?",
+                  },
+                ],
               }}
             >
-              <ChatMessageBubble variant="filled">
-                Hi, how are you today?
-              </ChatMessageBubble>
-              <ChatMessageMetadata
-                reveal="hover"
-                spacing="sm"
-              ></ChatMessageMetadata>
+              <ChatMessageBubble variant="filled">Hi, how are you today?</ChatMessageBubble>
+              <ChatMessageMetadata reveal="hover" spacing="sm"></ChatMessageMetadata>
             </ChatMessageContextProvider>
           </ChatMessage>
           <ChatMessage role="assistant">
             <ChatMessageContextProvider
               message={{
                 role: "assistant",
-                message_id: "2",
-                content: "How can i help you?",
+                id: "2",
+                contents: [
+                  {
+                    type: "text",
+                    text: "How can i help you?",
+                  },
+                ],
               }}
             >
               <ChatMessageBubble>How can i help you?</ChatMessageBubble>
@@ -51,7 +57,11 @@ export function ChatSection() {
       </DemoBlock>
       <DemoBlock title="ChatComposer">
         <ChatComposer
-          drawer={<Chip>some-file.pdf</Chip>}
+          drawer={
+            <ChatComposerDrawer>
+              <Chip className="bg-background">some-file.pdf</Chip>
+            </ChatComposerDrawer>
+          }
           onSubmit={() => {}}
           headerActions={
             <ChatComposeButton>
@@ -68,7 +78,7 @@ export function ChatSection() {
               onChange={(v) => console.log("selected model: ", v)}
             />
           }
-          status={{
+          statusBar={{
             type: "error",
             message: "file limit exceeded",
           }}

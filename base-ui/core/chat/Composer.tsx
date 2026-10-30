@@ -66,7 +66,7 @@ function NotificationDrawer({ url }: { url: string }) {
 
   if (node) {
     return (
-      <ChatComposerDrawer className="text-accent-foreground gap-2 text-xs">
+      <ChatComposerDrawer className="text-muted gap-2 text-xs">
         <Loading size="xs" />
         {node}
       </ChatComposerDrawer>
