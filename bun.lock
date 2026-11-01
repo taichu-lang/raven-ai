@@ -84,6 +84,7 @@
         "postcss": "8.5.6",
         "prettier": "^3.8.1",
         "prettier-plugin-tailwindcss": "^0.8.1",
+        "qrcode.react": "^4.2.0",
         "react": "catalog:",
         "react-dom": "catalog:",
         "tailwind-variants": "3.3.0",
@@ -1426,6 +1427,8 @@
     "prosemirror-view": ["prosemirror-view@1.42.6", "https://mirrors.cloud.tencent.com/npm/prosemirror-view/-/prosemirror-view-1.42.6.tgz", { "dependencies": { "prosemirror-model": "^1.25.12", "prosemirror-state": "^1.0.0", "prosemirror-transform": "^1.1.0" } }, "sha512-3g25f6hKV2bBxo3puH3EcYWmmVNSH0iWmNsMVT7sugDSpA025jgpOLarcDWr39SdzPjYMaiYtRdNtXialPSjEQ=="],
 
     "punycode": ["punycode@2.3.1", "https://mirrors.cloud.tencent.com/npm/punycode/-/punycode-2.3.1.tgz", {}, "sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg=="],
+
+    "qrcode.react": ["qrcode.react@4.2.0", "https://mirrors.cloud.tencent.com/npm/qrcode.react/-/qrcode.react-4.2.0.tgz", { "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-QpgqWi8rD9DsS9EP3z7BT+5lY5SFhsqGjpgW5DY/i3mK4M9DTBNz3ErMi8BWYEfI3L0d8GIbGmcdFAS1uIRGjA=="],
 
     "queue-microtask": ["queue-microtask@1.2.3", "https://mirrors.cloud.tencent.com/npm/queue-microtask/-/queue-microtask-1.2.3.tgz", {}, "sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A=="],
 

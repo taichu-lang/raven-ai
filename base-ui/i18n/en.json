@@ -23,5 +23,45 @@
     "theme": "Theme",
     "themeLight": "Light",
     "themeDark": "Dark"
+  },
+  "auth": {
+    "login": "Sign in",
+    "title": "Sign in to Raven",
+    "wechatTitle": "Scan with WeChat",
+    "wechatHint": "Open WeChat and scan the QR code to sign in",
+    "wechatScanned": "Scanned",
+    "wechatScannedHint": "Confirm on your phone to continue",
+    "wechatExpired": "QR code expired",
+    "wechatRefresh": "Refresh QR code",
+    "switchToAccount": "Sign in with password",
+    "switchToWechat": "Sign in with WeChat QR code",
+    "accountTitle": "Account sign in",
+    "accountLabel": "Email",
+    "accountPlaceholder": "Enter your email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "submit": "Sign in",
+    "agreement": "By signing in you agree to the Terms of Service and Privacy Policy",
+    "goToSlide": "Go to slide {index}",
+    "slides": {
+      "create": {
+        "title": "Create from a prompt",
+        "desc": "Describe your idea in natural language and Raven takes it from concept to delivery."
+      },
+      "agent": {
+        "title": "Agent collaboration",
+        "desc": "Specialized agents work together like an on-demand creative team."
+      },
+      "flow": {
+        "title": "Visual workflows",
+        "desc": "Compose task flows visually, with every step observable and interruptible."
+      },
+      "design": {
+        "title": "Design-grade output",
+        "desc": "Not just answers — deliverable-ready designs and documents."
+      }
+    }
   }
 }

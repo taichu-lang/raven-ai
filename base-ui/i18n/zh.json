@@ -23,5 +23,45 @@
     "theme": "主题",
     "themeLight": "亮色",
     "themeDark": "暗色"
+  },
+  "auth": {
+    "login": "立即登陆",
+    "title": "登录 Raven",
+    "wechatTitle": "微信扫码登录",
+    "wechatHint": "打开微信「扫一扫」，扫码登录",
+    "wechatScanned": "扫码成功",
+    "wechatScannedHint": "请在手机上确认登录",
+    "wechatExpired": "二维码已过期",
+    "wechatRefresh": "刷新二维码",
+    "switchToAccount": "使用账号密码登录",
+    "switchToWechat": "使用微信扫码登录",
+    "accountTitle": "账号登录",
+    "accountLabel": "邮箱",
+    "accountPlaceholder": "请输入邮箱",
+    "passwordLabel": "密码",
+    "passwordPlaceholder": "请输入密码",
+    "showPassword": "显示密码",
+    "hidePassword": "隐藏密码",
+    "submit": "登录",
+    "agreement": "登录即表示你已阅读并同意《用户协议》与《隐私政策》",
+    "goToSlide": "跳转到第 {index} 张",
+    "slides": {
+      "create": {
+        "title": "一句话生成创意",
+        "desc": "用自然语言描述你的想法，Raven 为你完成从构思到成品的全过程。"
+      },
+      "agent": {
+        "title": "智能体协作",
+        "desc": "多个专业智能体协同工作，像一支随叫随到的创意团队。"
+      },
+      "flow": {
+        "title": "可视化工作流",
+        "desc": "拖拽编排任务流程，每一步进展清晰可见、随时介入。"
+      },
+      "design": {
+        "title": "设计级输出",
+        "desc": "生成的不仅是答案，更是可以直接交付的设计与文档。"
+      }
+    }
   }
 }

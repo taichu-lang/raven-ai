@@ -1,22 +1,21 @@
 "use client";
 
-import { Dropdown, Label, Switch, Tooltip } from "@heroui/react";
+import { Dropdown, Label, Skeleton, Switch, Tooltip } from "@heroui/react";
+import { useModelCatalog } from "base-ui/hooks/useModelCatalog";
 import { usePreference } from "base-ui/hooks/usePreference";
-import { groupModelsByFamily, MODELS } from "base-ui/types/models";
 import { ChatComposeButton } from "hero-next/chat";
 import { BoxIcon, ChevronRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-const GROUPS = groupModelsByFamily(MODELS);
-
 export function ModelSelector() {
   const t = useTranslations();
   const { model, setModel } = usePreference();
-  const selected = MODELS.find((m) => m.id === model);
+  const { models, groups, loading } = useModelCatalog();
+  const selected = models.find((m) => m.id === model);
   const auto = !selected;
 
   const handleAutoChange = (isSelected: boolean) => {
-    setModel(isSelected ? null : MODELS[0].id);
+    setModel(isSelected ? null : (models[0]?.id ?? null));
   };
 
   return (
@@ -32,7 +31,7 @@ export function ModelSelector() {
       <Dropdown.Popover placement="top right" className="w-64">
         <div className="mx-3 mt-3 mb-1 flex items-center justify-between text-sm font-medium">
           {t("chat.modelPreference")}
-          <Switch size="sm" isSelected={auto} onChange={handleAutoChange}>
+          <Switch size="sm" isDisabled={loading} isSelected={auto} onChange={handleAutoChange}>
             <Switch.Content className="text-muted text-xs">
               {t("chat.modelAuto")}
               <Switch.Control>
@@ -41,35 +40,43 @@ export function ModelSelector() {
             </Switch.Content>
           </Switch>
         </div>
-        <Dropdown.Menu>
-          {GROUPS.map(([family, models]) => (
-            <Dropdown.SubmenuTrigger key={family}>
-              <Dropdown.Item id={family} textValue={family}>
-                <Label className="capitalize">{family}</Label>
-                <ChevronRightIcon className="text-muted ms-auto size-4 shrink-0" />
-              </Dropdown.Item>
-              <Dropdown.Popover>
-                <Dropdown.Menu
-                  selectedKeys={selected ? [selected.id] : []}
-                  selectionMode="single"
-                  onSelectionChange={(keys) => {
-                    const [key] = keys;
-                    if (key) {
-                      setModel(key as string);
-                    }
-                  }}
-                >
-                  {models.map((m) => (
-                    <Dropdown.Item key={m.id} id={m.id} textValue={m.name}>
-                      <Dropdown.ItemIndicator />
-                      <Label>{m.name}</Label>
-                    </Dropdown.Item>
-                  ))}
-                </Dropdown.Menu>
-              </Dropdown.Popover>
-            </Dropdown.SubmenuTrigger>
-          ))}
-        </Dropdown.Menu>
+        {loading ? (
+          <div className="space-y-2 p-3 pt-2">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <Skeleton key={index} className="h-4 rounded" />
+            ))}
+          </div>
+        ) : (
+          <Dropdown.Menu>
+            {groups.map(([family, models]) => (
+              <Dropdown.SubmenuTrigger key={family}>
+                <Dropdown.Item id={family} textValue={family}>
+                  <Label className="capitalize">{family}</Label>
+                  <ChevronRightIcon className="text-muted ms-auto size-4 shrink-0" />
+                </Dropdown.Item>
+                <Dropdown.Popover>
+                  <Dropdown.Menu
+                    selectedKeys={selected ? [selected.id] : []}
+                    selectionMode="single"
+                    onSelectionChange={(keys) => {
+                      const [key] = keys;
+                      if (key) {
+                        setModel(key as string);
+                      }
+                    }}
+                  >
+                    {models.map((m) => (
+                      <Dropdown.Item key={m.id} id={m.id} textValue={m.name}>
+                        <Dropdown.ItemIndicator />
+                        <Label>{m.name}</Label>
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown.Popover>
+              </Dropdown.SubmenuTrigger>
+            ))}
+          </Dropdown.Menu>
+        )}
       </Dropdown.Popover>
     </Dropdown>
   );

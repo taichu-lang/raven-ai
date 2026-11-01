@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 
 import { PlatformProvider } from "@/platform/context";
+import { LoginModal } from "base-ui/auth";
 import { AppSidebar } from "base-ui/layout";
 import clsx from "clsx";
 import { routing } from "hero-next/i18n/routing";
@@ -51,6 +52,7 @@ export default async function RootLayout({
                 <AppSidebar />
                 <div className="flex-1 overflow-y-auto">{children}</div>
               </div>
+              <LoginModal />
             </PlatformProvider>
           </ThemeProvider>
         </NextIntlClientProvider>

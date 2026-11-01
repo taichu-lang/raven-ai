@@ -1,6 +1,7 @@
 "use client";
 
-import { Avatar, cn, Dropdown, Label, Separator } from "@heroui/react";
+import { Avatar, Button, cn, Dropdown, Label, Separator } from "@heroui/react";
+import { useAuth } from "base-ui/hooks/useAuth";
 import { useConversationScroller } from "base-ui/hooks/useConversationMutations";
 import { usePreference } from "base-ui/hooks/usePreference";
 import { useRavenPlatform } from "base-ui/platform";
@@ -14,6 +15,7 @@ import {
   ChevronRightIcon,
   LanguagesIcon,
   LogOutIcon,
+  MenuIcon,
   MonitorSmartphoneIcon,
   PaletteIcon,
   SettingsIcon,
@@ -23,6 +25,38 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 import { getConversations } from "./lib";
+
+/**
+ * Restores the persisted preference on first load: rehydrates the store from
+ * localStorage, then applies the saved theme and navigates to the saved locale
+ * when it differs from the current URL locale.
+ */
+function PreferenceSync() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const locale = useLocale();
+  const { setTheme } = useTheme();
+  const synced = useRef(false);
+
+  useEffect(() => {
+    if (synced.current) return;
+    synced.current = true;
+
+    const restore = async () => {
+      await usePreference.persist.rehydrate();
+      const { locale: savedLocale, theme: savedTheme } = usePreference.getState();
+      if (savedTheme) {
+        setTheme(savedTheme);
+      }
+      if (savedLocale && savedLocale !== locale) {
+        router.replace(pathname, { locale: savedLocale });
+      }
+    };
+    restore();
+  }, [locale, pathname, router, setTheme]);
+
+  return null;
+}
 
 function Languages() {
   const t = useTranslations();
@@ -132,29 +166,35 @@ function Preferences() {
 
 function ProfileDropdown() {
   const t = useTranslations();
+  const { user, signOut } = useAuth();
+
+  if (!user) return null;
+
+  const avatar = user.name.slice(0, 2).toUpperCase();
 
   return (
     <Dropdown>
       <Dropdown.Trigger className={"hover:bg-default flex w-full items-center gap-2 rounded-xl p-1"}>
         <Avatar size="sm" color="danger" variant="soft">
-          <Avatar.Fallback>LE</Avatar.Fallback>
+          <Avatar.Fallback>{avatar}</Avatar.Fallback>
         </Avatar>
         <div className="flex flex-col text-start">
-          <p className="text-sm">leo</p>
+          <p className="text-sm">{user.name}</p>
           <p className="text-muted text-xs">{t("sidebar.plan")}</p>
         </div>
       </Dropdown.Trigger>
       <Dropdown.Popover className={"w-64"}>
         <div className="mx-3 mt-3 mb-1 flex items-center gap-2 text-sm">
           <Avatar size="sm" variant="soft" color="danger">
-            <Avatar.Fallback>LE</Avatar.Fallback>
+            <Avatar.Fallback>{avatar}</Avatar.Fallback>
           </Avatar>
-          leo@gmail.com
+          {user.email}
         </div>
         <Dropdown.Menu
-          onSelectionChange={(keys) => console.log(keys)}
           selectionMode="single"
-          onAction={(key) => console.log(key)}
+          onAction={(key) => {
+            if (key === "signOut") signOut();
+          }}
         >
           <Dropdown.Item href="/profile">
             <User2Icon className="text-muted size-4 shrink-0" /> {t("sidebar.profile")}
@@ -165,13 +205,50 @@ function ProfileDropdown() {
             {t("sidebar.settings")}
           </Dropdown.Item>
           <Separator className="my-0.5" />
-          <Dropdown.Item className="text-danger hover:bg-danger-soft-hover">
+          <Dropdown.Item id="signOut" className="text-danger hover:bg-danger-soft-hover">
             <LogOutIcon className="text-danger size-4 shrink-0" />
             {t("sidebar.signOut")}
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown.Popover>
     </Dropdown>
+  );
+}
+
+function LoginModal() {
+  const t = useTranslations();
+  const handleClick = () => {
+    const { toggleAuthModal } = useAuth.getState();
+    toggleAuthModal(true);
+  };
+
+  return (
+    <Button onClick={handleClick} className={"bg-foreground text-background w-full rounded-lg"}>
+      {t("auth.login")}
+    </Button>
+  );
+}
+
+function FooterAccount() {
+  const user = useAuth((s) => s.user);
+
+  return user ? (
+    <ProfileDropdown />
+  ) : (
+    <div className="flex w-full items-center gap-2">
+      <LoginModal />
+      <Dropdown>
+        <Button isIconOnly className={"shrink-0 rounded-lg"} variant="secondary">
+          <MenuIcon className="text-muted size-4 shrink-0" />
+        </Button>
+        <Dropdown.Popover placement="top end" className={"w-65"}>
+          <Dropdown.Menu>
+            <Languages />
+            <Themes />
+          </Dropdown.Menu>
+        </Dropdown.Popover>
+      </Dropdown>
+    </div>
   );
 }
 
@@ -287,17 +364,20 @@ export function AppSidebar() {
   const t = useTranslations();
 
   return (
-    <Sidebar>
-      <Header />
-      <nav className="mt-2 flex justify-center px-2">
-        <Sidebar.Item href="/" icon={<SquarePenIcon className="size-4 shrink-0" />}>
-          {t("sidebar.newTask")}
-        </Sidebar.Item>
-      </nav>
-      <Body />
-      <Sidebar.Footer>
-        <ProfileDropdown />
-      </Sidebar.Footer>
-    </Sidebar>
+    <>
+      <PreferenceSync />
+      <Sidebar>
+        <Header />
+        <nav className="mt-2 flex justify-center px-2">
+          <Sidebar.Item href="/" icon={<SquarePenIcon className="size-4 shrink-0" />}>
+            {t("sidebar.newTask")}
+          </Sidebar.Item>
+        </nav>
+        <Body />
+        <Sidebar.Footer>
+          <FooterAccount />
+        </Sidebar.Footer>
+      </Sidebar>
+    </>
   );
 }
