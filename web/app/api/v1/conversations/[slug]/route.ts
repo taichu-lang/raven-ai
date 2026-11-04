@@ -1,5 +1,6 @@
 "server-only";
 
+import { buildAuthHeader } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
@@ -16,8 +17,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     url.searchParams.set(key, value);
   });
 
+  const auth = await buildAuthHeader();
   const response = await fetch(url, {
     method: "GET",
+    headers: auth,
   });
   if (response.status !== 200) {
     console.log("failed to get conversation, status: ", response.status);

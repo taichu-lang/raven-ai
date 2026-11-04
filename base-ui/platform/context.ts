@@ -1,6 +1,7 @@
 import { Skill } from "hero-next/chat";
 import { createContext, useCallback, useContext, useState } from "react";
 import { SkillsLoader } from "./skills";
+import { noopTokenStore, TokenStore } from "./token";
 
 export type DeviceType = "web" | "desktop";
 
@@ -8,6 +9,8 @@ export type DeviceType = "web" | "desktop";
 export interface RavenPlatform {
   device: DeviceType;
   skillsLoader: SkillsLoader;
+  // Persists the auth token. Different devices store it in different places (cookie, system keychain, ...).
+  tokenStore: TokenStore;
   // Declares the base url using in fetch requests.
   baseUrl: string;
   // Builds the in-app path of a conversation. Static export (desktop) cannot enumerate dynamic segments
@@ -22,6 +25,7 @@ const noopLoader: SkillsLoader = {
 const RavenPlatformContext = createContext<RavenPlatform>({
   device: "web",
   skillsLoader: noopLoader,
+  tokenStore: noopTokenStore,
   // We will use next.js api routers, so base url should be empty.
   baseUrl: "",
   conversationRouter: (id) => `/${id}`,

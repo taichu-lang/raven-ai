@@ -1,11 +1,12 @@
 "use client";
 
 import { Avatar, Button, cn, Dropdown, Label, Separator } from "@heroui/react";
-import { useAuth } from "base-ui/hooks/useAuth";
+import { useAuth, useAuthExt, useAuthHydrated } from "base-ui/hooks/useAuth";
 import { useConversationScroller } from "base-ui/hooks/useConversationMutations";
 import { usePreference } from "base-ui/hooks/usePreference";
 import { useRavenPlatform } from "base-ui/platform";
 import { Conversation } from "base-ui/types/chat";
+import { getUserName } from "base-ui/types/profile";
 import { usePathname, useRouter } from "hero-next/i18n/navigation";
 import { InfiniteScrollView, InfiniteScrollViewHandle, Item, Sidebar } from "hero-next/layout";
 import { useTheme } from "hero-next/theme";
@@ -166,34 +167,35 @@ function Preferences() {
 
 function ProfileDropdown() {
   const t = useTranslations();
-  const { user, signOut } = useAuth();
+  const user = useAuth((s) => s.user);
+  const { logout } = useAuthExt();
 
   if (!user) return null;
 
-  const avatar = user.name.slice(0, 2).toUpperCase();
+  const name = getUserName(user);
 
   return (
     <Dropdown>
       <Dropdown.Trigger className={"hover:bg-default flex w-full items-center gap-2 rounded-xl p-1"}>
         <Avatar size="sm" color="danger" variant="soft">
-          <Avatar.Fallback>{avatar}</Avatar.Fallback>
+          <Avatar.Fallback>{name.slice(0, 2).toUpperCase()}</Avatar.Fallback>
         </Avatar>
         <div className="flex flex-col text-start">
-          <p className="text-sm">{user.name}</p>
+          <p className="text-sm">{name}</p>
           <p className="text-muted text-xs">{t("sidebar.plan")}</p>
         </div>
       </Dropdown.Trigger>
       <Dropdown.Popover className={"w-64"}>
         <div className="mx-3 mt-3 mb-1 flex items-center gap-2 text-sm">
           <Avatar size="sm" variant="soft" color="danger">
-            <Avatar.Fallback>{avatar}</Avatar.Fallback>
+            <Avatar.Fallback>{name.slice(0, 2).toUpperCase()}</Avatar.Fallback>
           </Avatar>
           {user.email}
         </div>
         <Dropdown.Menu
           selectionMode="single"
           onAction={(key) => {
-            if (key === "signOut") signOut();
+            if (key === "signOut") logout();
           }}
         >
           <Dropdown.Item href="/profile">
@@ -215,7 +217,7 @@ function ProfileDropdown() {
   );
 }
 
-function LoginModal() {
+function LoginModalTrigger() {
   const t = useTranslations();
   const handleClick = () => {
     const { toggleAuthModal } = useAuth.getState();
@@ -231,12 +233,19 @@ function LoginModal() {
 
 function FooterAccount() {
   const user = useAuth((s) => s.user);
+  const hydrated = useAuthHydrated();
+
+  // Reserve the space, otherwise the SSR html paints the logged-out state first and then swaps to the profile.
+  // TODO(Leo): use Skeleton.
+  if (!hydrated) {
+    return <div className="h-10 w-full" aria-hidden />;
+  }
 
   return user ? (
     <ProfileDropdown />
   ) : (
     <div className="flex w-full items-center gap-2">
-      <LoginModal />
+      <LoginModalTrigger />
       <Dropdown>
         <Button isIconOnly className={"shrink-0 rounded-lg"} variant="secondary">
           <MenuIcon className="text-muted size-4 shrink-0" />
@@ -265,12 +274,22 @@ function Body() {
   const ref = useRef<InfiniteScrollViewHandle | null>(null);
   const { setScrollRef } = useConversationScroller();
   const { baseUrl, conversationRouter } = useRavenPlatform();
+  const status = useAuth((s) => s.status);
 
   useEffect(() => {
     if (ref.current) {
       setScrollRef(ref);
     }
   }, [setScrollRef]);
+
+  // Once login, reload recent conversations.
+  useEffect(() => {
+    if (status === "unknown") {
+      return;
+    }
+
+    useConversationScroller.getState().reloadRecent();
+  }, [status]);
 
   return (
     <InfiniteScrollView<Conversation | ExtensionMenu>
@@ -296,6 +315,12 @@ function Body() {
             return conversation.id.toString();
           },
           fetch: async ({ after, limit, signal }) => {
+            // Read at call time rather than from the render closure, so a refresh always sees the latest status.
+            // `unknown` is skipped too: the session is verified shortly, and the effect above reloads afterwards.
+            if (useAuth.getState().status !== "authenticated") {
+              return [];
+            }
+
             const from = after ? Number(after) : 0;
             return await getConversations(baseUrl, from, limit, signal);
           },

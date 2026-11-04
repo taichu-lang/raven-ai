@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Spinner } from "@heroui/react";
-import { useAuth } from "base-ui/hooks/useAuth";
+import { useAuthExt } from "base-ui/hooks/useAuth";
 import { CircleCheckIcon, RefreshCwIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { QRCodeSVG } from "qrcode.react";
@@ -16,7 +16,7 @@ const CONFIRM_DELAY_MS = 1_200;
 
 export function WechatLoginPanel() {
   const t = useTranslations();
-  const login = useAuth((s) => s.login);
+  const { login } = useAuthExt();
   const [status, setStatus] = useState<QrStatus>("pending");
   const [ticket, setTicket] = useState(() => crypto.randomUUID());
 
@@ -27,12 +27,13 @@ export function WechatLoginPanel() {
     return () => clearTimeout(timer);
   }, [ticket, status]);
 
-  // Simulated confirmation. TODO: in the real flow this is driven by polling
+  // Simulated confirmation.
+  // TODO(Leo): in the real flow this is driven by polling
   // or a push event for the ticket, which then calls login().
   useEffect(() => {
     if (status !== "scanned") return;
-    const timer = setTimeout(() => void login(), CONFIRM_DELAY_MS);
-    return () => clearTimeout(timer);
+    // const timer = setTimeout(() => void login({ method: "wechat", credential: { tiket } }), CONFIRM_DELAY_MS);
+    // return () => clearTimeout(timer);
   }, [status, login]);
 
   const refresh = () => {

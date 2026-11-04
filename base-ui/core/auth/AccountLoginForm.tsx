@@ -1,15 +1,16 @@
 "use client";
 
-import { Button, Input, InputGroup, Label, Spinner, TextField } from "@heroui/react";
-import { useAuth } from "base-ui/hooks/useAuth";
+import { Button, Input, InputGroup, Label, Link, Spinner, TextField } from "@heroui/react";
+import { useAuth, useAuthExt } from "base-ui/hooks/useAuth";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 export function AccountLoginForm() {
   const t = useTranslations();
-  const login = useAuth((s) => s.login);
-  const [account, setAccount] = useState("");
+  const { login } = useAuthExt();
+  const setMethod = useAuth((s) => s.setMethod);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
   const [pending, setPending] = useState(false);
@@ -18,8 +19,7 @@ export function AccountLoginForm() {
     e.preventDefault();
     setPending(true);
     try {
-      // TODO: real credential check — catch failures here and show FieldError.
-      await login({ account });
+      await login({ method: "password", credential: { email, password } });
     } finally {
       setPending(false);
     }
@@ -29,9 +29,9 @@ export function AccountLoginForm() {
     <form onSubmit={onSubmit} className="flex w-full max-w-[320px] flex-col gap-4">
       <h2 className="mb-6 text-center text-xl font-semibold">{t("auth.accountTitle")}</h2>
 
-      <TextField isRequired name="account" value={account} onChange={setAccount}>
-        <Label>{t("auth.accountLabel")}</Label>
-        <Input placeholder={t("auth.accountPlaceholder")} />
+      <TextField isRequired name="email" value={email} onChange={setEmail}>
+        <Label>{t("auth.emailLabel")}</Label>
+        <Input placeholder={t("auth.emailPlaceholder")} />
       </TextField>
 
       <TextField isRequired name="password">
@@ -65,6 +65,15 @@ export function AccountLoginForm() {
           </>
         )}
       </Button>
+
+      {/* The OTP path covers both "forgot my password" and first-time visitors:
+          no sign-up flow exists — a verified code creates the account. */}
+      <div className="mt-4 flex flex-col items-center gap-1 text-center">
+        <p className="text-muted text-sm">{t("auth.otpHint")}</p>
+        <Link className="text-foreground text-sm underline" onPress={() => setMethod("otp")}>
+          {t("auth.otpEntry")}
+        </Link>
+      </div>
     </form>
   );
 }
