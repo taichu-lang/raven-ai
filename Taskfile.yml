@@ -1,0 +1,24 @@
+version: "3"
+
+tasks:
+  clean:
+    cmds:
+      - rm -rf web/.next
+      - rm -rf release
+
+  package:web:
+    cmds:
+      - bun install
+      - bun run build
+      - cp -r web/.next/standalone release/
+      - cp -r web/.next/static release/web/.next
+      - cp -r web/public release/web
+    deps:
+      - clean
+
+  docker:
+    cmds:
+      - docker build -t raven-ai:0.1 -f ci/Dockerfile . --no-cache
+
+    deps:
+      - package:web

@@ -63,3 +63,4 @@ bun.lockb
 .heroui-docs/
 .marscode/
 .env.development
+/release/

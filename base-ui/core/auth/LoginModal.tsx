@@ -37,7 +37,7 @@ export function LoginModal() {
               </div>
 
               {/* Right: login methods */}
-              <div className="flex min-h-[460px] flex-col items-center justify-center gap-6 p-8 md:min-h-[560px] md:p-10">
+              <div className="flex min-h-[460px] flex-col items-center justify-center gap-6 p-10 md:min-h-[560px] md:pt-12">
                 {method === "wechat" ? (
                   <WechatLoginPanel />
                 ) : method === "otp" ? (
@@ -54,7 +54,7 @@ export function LoginModal() {
                   {method === "wechat" ? t("auth.switchToAccount") : t("auth.switchToWechat")}
                 </Button>
 
-                <p className="text-muted max-w-[300px] text-center text-xs">{t("auth.agreement")}</p>
+                <p className="text-muted mt-auto max-w-[300px] text-center text-xs">{t("auth.agreement")}</p>
               </div>
             </div>
           </Modal.Body>

@@ -1,6 +1,6 @@
 import { toast } from "@heroui/react";
 import { useRavenPlatform } from "base-ui/platform";
-import { ApiResponse } from "base-ui/types/api";
+import { ApiCodeOK, ApiCodeSystem, ApiResponse } from "base-ui/types/api";
 import { AuthMethod, LoginRequest, User, UserAuth } from "base-ui/types/profile";
 import { useCallback, useState } from "react";
 import { create } from "zustand";
@@ -66,7 +66,7 @@ export function useAuthExt() {
   const [pending, setPending] = useState<boolean>(false);
 
   const login = useCallback(
-    async (req: LoginRequest) => {
+    async (req: LoginRequest): Promise<number> => {
       try {
         setPending(true);
         const client = await fetch(`${baseUrl}/api/v1/auth/login`, {
@@ -78,24 +78,26 @@ export function useAuthExt() {
         });
         if (!client.ok) {
           toast.danger("Network issue");
-          return;
+          return ApiCodeSystem;
         }
 
         const data = (await client.json()) as ApiResponse<UserAuth>;
         if (data.code > 0) {
-          toast.danger(data.message || "unknown error");
-          return;
+          return data.code;
         }
 
         const { token, expires_at, ...user } = data.data;
         // Each platform decides where the token is persisted (HttpOnly cookie, system keychain, ...).
         await tokenStore.set(token, expires_at);
         setUser(user);
+        return ApiCodeOK;
       } catch {
         toast.danger("Network issue");
       } finally {
         setPending(false);
       }
+
+      return ApiCodeSystem;
     },
     [baseUrl, tokenStore, setUser],
   );

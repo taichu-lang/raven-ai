@@ -1,5 +1,6 @@
 "server-only";
 
+import { buildAuthHeader } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
@@ -11,9 +12,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const { slug } = await params;
   const headers = Object.fromEntries(request.headers);
 
+  const auth = await buildAuthHeader();
   const upstream = await fetch(`${serverUrl}/api/v1/chat/${slug}`, {
     method: "POST",
-    headers: { ...headers },
+    headers: { ...headers, ...auth },
     body: await request.text(),
     signal: request.signal,
   });

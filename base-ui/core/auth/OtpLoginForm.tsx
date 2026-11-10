@@ -2,11 +2,13 @@
 
 import { Button, InputGroup, InputOTP, Label, Link, Spinner, TextField } from "@heroui/react";
 import { useAuth, useAuthExt } from "base-ui/hooks/useAuth";
+import { useRavenPlatform } from "base-ui/platform";
+import { ApiCodeInput } from "base-ui/types/api";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
-// TODO: align with the server-side OTP resend policy once the real API lands.
 const RESEND_COOLDOWN_S = 60;
+const OTP_LENGTH = 6;
 
 export function OtpLoginForm() {
   const t = useTranslations();
@@ -18,6 +20,8 @@ export function OtpLoginForm() {
   const [sending, setSending] = useState(false);
   const [pending, setPending] = useState(false);
   const [countdown, setCountdown] = useState(0);
+  const { baseUrl } = useRavenPlatform();
+  const [error, setError] = useState<string>("");
 
   // Resend countdown, started whenever a code is issued.
   useEffect(() => {
@@ -30,8 +34,11 @@ export function OtpLoginForm() {
     if (!email || sending || countdown > 0) return;
     setSending(true);
     try {
-      // TODO: POST /auth/otp/send with { email }.
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      await fetch(`${baseUrl}/api/v1/auth/otp/send`, {
+        method: "POST",
+        body: JSON.stringify({ email, code }),
+      });
+
       setSent(true);
       setCountdown(RESEND_COOLDOWN_S);
     } finally {
@@ -41,10 +48,19 @@ export function OtpLoginForm() {
 
   const onSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (code.length !== 4 || pending) return;
+    if (code.length !== OTP_LENGTH || pending) return;
     setPending(true);
     try {
-      await login({ method: "otp", credential: { code, email } });
+      const result = await login({ method: "otp", credential: { code, email } });
+      switch (result) {
+        // TODO(Leo): error handling.
+        case ApiCodeInput:
+          setError("incorrect code");
+          break;
+
+        default:
+          break;
+      }
     } finally {
       setPending(false);
     }
@@ -85,17 +101,35 @@ export function OtpLoginForm() {
 
       <div className="flex flex-col gap-2">
         <Label>{t("auth.otpCodeLabel")}</Label>
-        <InputOTP maxLength={4} value={code} onChange={setCode} isDisabled={!sent}>
+        <InputOTP
+          maxLength={OTP_LENGTH}
+          value={code}
+          onChange={(v) => {
+            setCode(v);
+            setError("");
+          }}
+          isDisabled={!sent}
+          className="w-fit"
+        >
           <InputOTP.Group>
-            <InputOTP.Slot index={0} />
-            <InputOTP.Slot index={1} />
-            <InputOTP.Slot index={2} />
-            <InputOTP.Slot index={3} />
+            {Array.from({ length: OTP_LENGTH / 2 }, (_, i) => (
+              <InputOTP.Slot index={i} key={i} className={error ? "ring-danger ring ring-inset" : ""} />
+            ))}
+          </InputOTP.Group>
+          <InputOTP.Separator />
+          <InputOTP.Group>
+            {Array.from({ length: OTP_LENGTH / 2 }, (_, i) => (
+              <InputOTP.Slot
+                index={OTP_LENGTH / 2 + i}
+                key={OTP_LENGTH / 2 + i}
+                className={error ? "ring-danger ring ring-inset" : ""}
+              />
+            ))}
           </InputOTP.Group>
         </InputOTP>
       </div>
 
-      <Button type="submit" isPending={pending} isDisabled={code.length !== 4} className="mt-2 w-full">
+      <Button type="submit" isPending={pending} isDisabled={code.length !== OTP_LENGTH} className="mt-2 w-full">
         {({ isPending }) => (
           <>
             {isPending ? <Spinner color="current" size="sm" /> : null}
