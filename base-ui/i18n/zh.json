@@ -6,7 +6,14 @@
     "reliabilityTip": "内容由 AI 生成, 请注意核实",
     "skills": "技能",
     "modelPreference": "模型偏好",
-    "modelAuto": "自动"
+    "modelAuto": "自动",
+    "loadingConversation": "正在加载对话",
+    "initializingAgent": "Agent初始化",
+    "thinking": "思考中",
+    "modelProcessing": "模型处理中",
+    "runningTools": "工具正在执行",
+    "confirmQuestions": "确认问题",
+    "submit": "提交"
   },
   "sidebar": {
     "newTask": "新任务",

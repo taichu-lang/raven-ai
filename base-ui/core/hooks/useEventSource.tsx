@@ -3,12 +3,12 @@
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { Conversation } from "base-ui/types/chat";
 import {
-  BaseMessage,
+  Message,
   QuestionToolArgs,
   Skill,
   ToolCallContent,
   ToolResultContent,
-  useChatContext,
+  useActiveTurnActions,
 } from "hero-next/chat";
 import { useConversationMutations } from "./useConversationMutations";
 import { usePreference } from "./usePreference";
@@ -50,13 +50,15 @@ interface ChatRequest {
 }
 
 interface TurnStartEventData {
-  messages: BaseMessage[];
+  turn_seq: number;
+  messages: Message[];
 }
 
 export function useEventSource() {
   const {
-    setStatus,
-    addUserMessage,
+    startTurn,
+    endTurn,
+    failTurn,
     onStream,
     onReasoningStream,
     onToolCall,
@@ -65,7 +67,7 @@ export function useEventSource() {
     beginRequest,
     endRequest,
     onConfirmation,
-  } = useChatContext();
+  } = useActiveTurnActions();
   const { onConversationCreated } = useConversationMutations();
   const model = usePreference((s) => s.model);
 
@@ -106,15 +108,17 @@ export function useEventSource() {
       // The 'assistant_id' returns from the server, and is immutable, then the message list will not be
       // re-rendered.
       const meta = JSON.parse(data) as TurnStartEventData;
-      // A resumed turn carries no new user message.
-      if (meta.messages?.length) {
-        addUserMessage(meta.messages);
-        onTurnStarted?.(meta.messages[0].id);
+      const messages = meta.messages ?? [];
+      // A resumed turn carries no new user message; the store keeps the open turn so the resumed
+      // stream continues it instead of splitting it.
+      startTurn(meta.turn_seq, messages);
+      if (messages.length) {
+        onTurnStarted?.(messages[0].id);
       }
     };
 
     const onReasoningDelta = (data: string) => {
-      const message = JSON.parse(data) as BaseMessage;
+      const message = JSON.parse(data) as Message;
       for (const content of message.contents) {
         if (content.type === "text") {
           onReasoningStream(message.id, content.text);
@@ -123,7 +127,7 @@ export function useEventSource() {
     };
 
     const onDelta = (data: string) => {
-      const message = JSON.parse(data) as BaseMessage;
+      const message = JSON.parse(data) as Message;
       for (const content of message.contents) {
         if (content.type === "text") {
           onStream(message.id, content.text);
@@ -132,29 +136,18 @@ export function useEventSource() {
     };
 
     const onAssistantComplete = (data: string) => {
-      const message = JSON.parse(data) as BaseMessage;
+      const message = JSON.parse(data) as Message;
       onStreamDone(message);
-    };
-
-    const onToolCallStart = (data: string) => {
-      const message = JSON.parse(data) as ToolCallContent;
-      onToolCall(message);
     };
 
     // The result of a tool call made in a previous iteration. Attach it to the matching ToolCallContent
     // instead of appending a standalone tool message, so the tool call card can show the outcome.
     const onToolResultMessage = (data: string) => {
-      const message = JSON.parse(data) as BaseMessage;
+      const message = JSON.parse(data) as Message;
       const results = message.contents.filter(
         (content): content is ToolResultContent => content.type === "tool_result",
       );
       onToolResult(results);
-    };
-
-    const onEnd = () => {
-      // The agent will send turn.end even if an approval is pending, as resources bound to this turn should
-      // be released. After the approval is processed, the turn will be resumed.
-      setStatus("idle");
     };
 
     const onHumanConfirmation = (data: string) => {
@@ -190,13 +183,9 @@ export function useEventSource() {
     // navigation for the first turn), not the composer component that triggered the submit.
     // beginRequest also aborts any previous in-flight request, and the page's cancel button
     // (cancelRequest) aborts this one through the same store.
+    // beginRequest also dismisses a pending confirmation, which a resume request answers.
     const abort = beginRequest();
     try {
-      if (request.resume) {
-        // setStatus ignores changes while in "approval", so dismiss the pending confirmation first.
-        onConfirmation([]);
-      }
-      setStatus("sending");
       await fetchEventSource(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -209,7 +198,7 @@ export function useEventSource() {
           switch (ev.event) {
             case "error":
               console.error("on error: ", ev.data);
-              setStatus("idle");
+              failTurn(abort);
               break;
 
             case EventType.ConversationStart:
@@ -233,7 +222,7 @@ export function useEventSource() {
               break;
 
             case EventType.ToolCall:
-              onToolCallStart(ev.data);
+              onToolCall();
               break;
 
             case EventType.ToolResult:
@@ -241,7 +230,9 @@ export function useEventSource() {
               break;
 
             case EventType.TurnEnd:
-              onEnd();
+              // The agent sends turn.end even if an approval is pending, to release the resources bound to
+              // the turn. endTurn keeps the turn open in that case and settles it otherwise.
+              endTurn();
               break;
 
             case EventType.HumanInLoop:
@@ -267,7 +258,7 @@ export function useEventSource() {
     } catch (err) {
       // handle the error thrown by `onerror` callback.
       console.error("on error: ", err);
-      setStatus("idle");
+      failTurn(abort);
     } finally {
       // The stream settled (turn.end, error, or aborted by cancelRequest, which resolves
       // without throwing). Unregister the controller; the identity check inside endRequest

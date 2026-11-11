@@ -5,18 +5,18 @@ import { useConversationMutations } from "base-ui/hooks/useConversationMutations
 import { useDraftMessage } from "base-ui/hooks/useDraftMessage";
 import { useEventSource } from "base-ui/hooks/useEventSource";
 import { useRavenPlatform } from "base-ui/platform";
-import { ChatMessageList, ChatMessageListHandler, ScrollBottomButton } from "hero-next/blocks/chat";
-import { useChatContext } from "hero-next/chat";
+import { ChatTurnList, ChatTurnListHandler, ScrollBottomButton } from "hero-next/blocks/chat";
+import { useChatViewActions } from "hero-next/chat";
 import { useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 export function ChatPageContent({ slug }: { slug: string }) {
   const t = useTranslations();
   const { sendChatMessage } = useEventSource();
-  const messageListHandler = useRef<ChatMessageListHandler>(null);
+  const turnListHandler = useRef<ChatTurnListHandler>(null);
   const [atBottom, setAtBottom] = useState<boolean>(false);
   const { setConversation } = useConversationMutations();
-  const { hydrate, setStatus } = useChatContext();
+  const { hydrate, setLoading } = useChatViewActions();
   const { baseUrl } = useRavenPlatform();
 
   // The conversation that this page instance has already initialized. React invokes mount effects
@@ -25,19 +25,21 @@ export function ChatPageContent({ slug }: { slug: string }) {
   const initializedRef = useRef<string | null>(null);
 
   const handleTurnStarted = useCallback((id: string) => {
-    messageListHandler.current?.stickToMessage(id);
+    turnListHandler.current?.stickToMessage(id);
   }, []);
 
   const fetchConversation = useCallback(async () => {
-    setStatus("loading");
-    const response = await getConversation(baseUrl, slug);
-    if (response) {
-      setConversation(response);
-      hydrate(response.messages);
+    setLoading(true);
+    try {
+      const response = await getConversation(baseUrl, slug);
+      if (response) {
+        setConversation(response);
+        hydrate(response.turns);
+      }
+    } finally {
+      setLoading(false);
     }
-
-    setStatus("idle");
-  }, [setStatus, baseUrl, setConversation, hydrate, slug]);
+  }, [setLoading, baseUrl, setConversation, hydrate, slug]);
 
   useEffect(() => {
     if (initializedRef.current === slug) {
@@ -49,7 +51,7 @@ export function ChatPageContent({ slug }: { slug: string }) {
     const { message, clearDraft } = useDraftMessage.getState();
     // A matching draft means the message was submitted from the landing page, which only stores it
     // and navigates here; the conversation itself is created by this first turn. sendChatMessage
-    // registers the request's AbortController in this page's ChatContext, so the cancel button
+    // registers the request's AbortController in this page's ActiveTurnContext, so the cancel button
     // below works for the first turn even though it was submitted by another page's composer.
     if (message?.conversationID === slug) {
       clearDraft();
@@ -74,11 +76,11 @@ export function ChatPageContent({ slug }: { slug: string }) {
   return (
     <React.Fragment>
       <div className="flex-1">
-        <ChatMessageList handleRef={messageListHandler} scrollPositionListener={setAtBottom} />
+        <ChatTurnList handleRef={turnListHandler} scrollPositionListener={setAtBottom} />
       </div>
       {/* Radius of Composer is 24px, using '-mx-6' to enable Composer to cover message list when scrolling to top.*/}
       <div className="sticky bottom-0 left-0 z-10 -mx-6">
-        <ScrollBottomButton onClick={() => messageListHandler.current?.scrollToBottom()} visible={!atBottom} />
+        <ScrollBottomButton onClick={() => turnListHandler.current?.scrollToBottom()} visible={!atBottom} />
         <Composer url={`${baseUrl}/api/v1/chat/${slug}`} onTurnStarted={handleTurnStarted} />
         <p className="text-background-inverse bg-background py-2 text-center text-xs">
           {t("chat.reliabilityTip")}

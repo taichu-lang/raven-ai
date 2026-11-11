@@ -21,16 +21,9 @@ export function ChatSection() {
         <div className="flex flex-col gap-3">
           <ChatMessage role="user" align="end">
             <ChatMessageContextProvider
-              message={{
-                role: "user",
-                id: "1",
-                contents: [
-                  {
-                    type: "text",
-                    text: "Hi, how are you today?",
-                  },
-                ],
-              }}
+              messages={[
+                { role: "user", id: "1", contents: [{ type: "text", text: "Hi, how are you today?" }] },
+              ]}
             >
               <ChatMessageBubble variant="filled">Hi, how are you today?</ChatMessageBubble>
               <ChatMessageMetadata reveal="hover" spacing="sm"></ChatMessageMetadata>
@@ -38,16 +31,9 @@ export function ChatSection() {
           </ChatMessage>
           <ChatMessage role="assistant">
             <ChatMessageContextProvider
-              message={{
-                role: "assistant",
-                id: "2",
-                contents: [
-                  {
-                    type: "text",
-                    text: "How can i help you?",
-                  },
-                ],
-              }}
+              messages={[
+                { role: "assistant", id: "2", contents: [{ type: "text", text: "How can i help you?" }] },
+              ]}
             >
               <ChatMessageBubble>How can i help you?</ChatMessageBubble>
               <ChatMessageMetadata spacing="sm"></ChatMessageMetadata>

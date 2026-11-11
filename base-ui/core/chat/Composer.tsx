@@ -4,7 +4,13 @@ import { Chip } from "@heroui/react";
 import { useDraftMessage } from "base-ui/hooks/useDraftMessage";
 import { useEventSource } from "base-ui/hooks/useEventSource";
 import { useRavenPlatform } from "base-ui/platform";
-import { ChatComposer, ChatComposerDrawer, ChatComposerValue, useChatContext } from "hero-next/chat";
+import {
+  ChatComposer,
+  ChatComposerDrawer,
+  ChatComposerValue,
+  useActiveTurn,
+  useChatView,
+} from "hero-next/chat";
 import { Loading } from "hero-next/effects";
 import { useRouter } from "hero-next/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -14,7 +20,11 @@ import { ConfirmationPanel } from "./ConfirmationPanel";
 import { ModelSelector } from "./ModelSelector";
 
 function NotificationDrawer({ url }: { url: string }) {
-  const { status, runningToolCalls, confirmation } = useChatContext();
+  const t = useTranslations();
+  const status = useActiveTurn((s) => s.status);
+  const runningToolCalls = useActiveTurn((s) => s.runningToolCalls);
+  const confirmation = useActiveTurn((s) => s.confirmation);
+  const loading = useChatView((s) => s.loading);
   const { sendChatMessage } = useEventSource();
 
   // Human-in-the-loop: the agent is waiting for the user to answer its questions.
@@ -34,34 +44,21 @@ function NotificationDrawer({ url }: { url: string }) {
   }
 
   let node: React.ReactNode = null;
-  switch (status) {
-    case "loading":
-      node = "正在加载对话";
-      break;
-
-    case "sending":
-      node = "Agent初始化";
-      break;
-
-    case "reasoning":
-      node = "思考中";
-      break;
-
-    case "streaming":
-      node = "模型处理中";
-      break;
-
-    default:
-      if (runningToolCalls > 0) {
-        node = (
-          <>
-            <Chip>{runningToolCalls}</Chip>工具正在执行
-          </>
-        );
-      } else {
-        node = null;
-      }
-      break;
+  if (loading) {
+    node = t("chat.loadingConversation");
+  } else if (status === "sending") {
+    node = t("chat.initializingAgent");
+  } else if (status === "reasoning") {
+    node = t("chat.thinking");
+  } else if (status === "streaming") {
+    node = t("chat.modelProcessing");
+  } else if (runningToolCalls > 0) {
+    node = (
+      <>
+        <Chip>{runningToolCalls}</Chip>
+        {t("chat.runningTools")}
+      </>
+    );
   }
 
   if (node) {
@@ -79,7 +76,8 @@ function NotificationDrawer({ url }: { url: string }) {
 export function Composer({ url, onTurnStarted }: { url: string; onTurnStarted: (id: string) => void }) {
   const t = useTranslations();
   const { sendChatMessage } = useEventSource();
-  const { status } = useChatContext();
+  const status = useActiveTurn((s) => s.status);
+  const loading = useChatView((s) => s.loading);
 
   const handleSubmit = ({ markdown, skills }: ChatComposerValue) => {
     sendChatMessage(
@@ -102,7 +100,7 @@ export function Composer({ url, onTurnStarted }: { url: string; onTurnStarted: (
       drawer={<NotificationDrawer url={url} />}
       footActions={<ActionSelector />}
       footContext={<ModelSelector />}
-      disabled={status !== "idle"}
+      disabled={loading || status !== "idle"}
     />
   );
 }

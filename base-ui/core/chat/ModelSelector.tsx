@@ -66,9 +66,9 @@ export function ModelSelector() {
                     }}
                   >
                     {models.map((m) => (
-                      <Dropdown.Item key={m.id} id={m.id} textValue={m.name}>
-                        <Dropdown.ItemIndicator />
+                      <Dropdown.Item key={m.id} id={m.id} textValue={m.name} className="ps-2 pe-7">
                         <Label>{m.name}</Label>
+                        <Dropdown.ItemIndicator className="start-auto end-2" />
                       </Dropdown.Item>
                     ))}
                   </Dropdown.Menu>

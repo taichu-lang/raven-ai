@@ -3,6 +3,7 @@
 import { Button, Description, Label, Radio, RadioGroup, ScrollShadow, Tabs } from "@heroui/react";
 import type { HumanConfirmation } from "hero-next/chat";
 import { CheckIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 /**
@@ -22,6 +23,7 @@ export function ConfirmationPanel({
   confirmation: HumanConfirmation;
   onSubmit: (answers: Record<string, string>) => void;
 }) {
+  const t = useTranslations();
   const { questions } = confirmation.arguments;
 
   // Tabs are keyed by question index. Answers are kept per index so each RadioGroup is
@@ -46,7 +48,7 @@ export function ConfirmationPanel({
   return (
     <Tabs className="w-full" selectedKey={activeKey} onSelectionChange={(key) => setActiveKey(String(key))}>
       <Tabs.ListContainer>
-        <Tabs.List aria-label="确认问题">
+        <Tabs.List aria-label={t("chat.confirmQuestions")}>
           {questions.map((question, index) => (
             <Tabs.Tab id={String(index)} key={index}>
               <span className="flex items-center gap-1">
@@ -87,7 +89,7 @@ export function ConfirmationPanel({
       ))}
       <div className="flex justify-end pt-2">
         <Button size="sm" isDisabled={!allAnswered} onPress={handleSubmit}>
-          提交
+          {t("chat.submit")}
         </Button>
       </div>
     </Tabs>
