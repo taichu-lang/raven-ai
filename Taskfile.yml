@@ -18,7 +18,7 @@ tasks:
 
   docker:
     cmds:
-      - docker build -t raven-ai:0.1 -f ci/Dockerfile . --no-cache
+      - docker build -t raven-agent-web:0.1 -f ci/Dockerfile . --no-cache
 
     deps:
       - package:web

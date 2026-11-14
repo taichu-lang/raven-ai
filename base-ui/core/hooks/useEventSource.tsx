@@ -8,6 +8,7 @@ import {
   Skill,
   ToolCallContent,
   ToolResultContent,
+  Turn,
   useActiveTurnActions,
 } from "hero-next/chat";
 import { useConversationMutations } from "./useConversationMutations";
@@ -170,6 +171,11 @@ export function useEventSource() {
       onConfirmation(confirmation);
     };
 
+    const onTurnEnd = (data: string) => {
+      const turn = JSON.parse(data) as Partial<Turn>;
+      endTurn(turn);
+    };
+
     // event: llm.reasoning.delta, data: {"id":"msg_5281e7e2-212a-4273-b3f7-8acbe9ce9960","role":"assistant","contents":[{"text":"The","type":"text"}]}
     // event: llm.delta, data: {"id":"msg_0362e91557a3ba07006ac45f1a9b9887d0b9ffe543b0ccedaf","role":"assistant","contents":[{"text":"Hello","type":"text"}]}
     // event: llm.complete, data: {"id":"resp_0362e91557a3ba07006ac45f19f79087d09eecad0a0426e5a4","role":"assistant","contents":[{"text":"Hello! How can I help you today? 😊","type":"text"}]}
@@ -232,7 +238,7 @@ export function useEventSource() {
             case EventType.TurnEnd:
               // The agent sends turn.end even if an approval is pending, to release the resources bound to
               // the turn. endTurn keeps the turn open in that case and settles it otherwise.
-              endTurn();
+              onTurnEnd(ev.data);
               break;
 
             case EventType.HumanInLoop:
