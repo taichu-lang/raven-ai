@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
+import { Logo } from "../ui/Logo";
 import { getConversations } from "./lib";
 
 /**
@@ -262,7 +263,11 @@ function FooterAccount() {
 }
 
 function Header() {
-  return <Sidebar.Header>Raven</Sidebar.Header>;
+  return (
+    <Sidebar.Header>
+      <Logo />
+    </Sidebar.Header>
+  );
 }
 
 interface ExtensionMenu {

@@ -4,6 +4,7 @@ import { Dropdown, Label, Skeleton, Switch, Tooltip } from "@heroui/react";
 import { useModelCatalog } from "base-ui/hooks/useModelCatalog";
 import { usePreference } from "base-ui/hooks/usePreference";
 import { ChatComposeButton } from "hero-next/chat";
+import { DropdownItemEnd } from "hero-next/layout";
 import { BoxIcon, ChevronRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -66,10 +67,9 @@ export function ModelSelector() {
                     }}
                   >
                     {models.map((m) => (
-                      <Dropdown.Item key={m.id} id={m.id} textValue={m.name} className="ps-2 pe-7">
+                      <DropdownItemEnd key={m.id} id={m.id} textValue={m.name}>
                         <Label>{m.name}</Label>
-                        <Dropdown.ItemIndicator className="start-auto end-2" />
-                      </Dropdown.Item>
+                      </DropdownItemEnd>
                     ))}
                   </Dropdown.Menu>
                 </Dropdown.Popover>
