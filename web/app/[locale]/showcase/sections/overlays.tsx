@@ -6,25 +6,21 @@ import { DemoBlock, ShowcaseSection } from "../_components/showcase-section";
 
 export function OverlaysSection() {
   return (
-    <ShowcaseSection
-      id="overlays"
-      title="Overlays"
-      description="Modal / Popover / Tooltip"
-    >
+    <ShowcaseSection id="overlays" title="Overlays" description="Modal / Popover / Tooltip">
       <DemoBlock title="Modal">
         <Modal>
           <Button variant="secondary">Open modal</Button>
           <Modal.Backdrop>
             <Modal.Container>
-              <Modal.Dialog className="sm:max-w-[360px]">
+              <Modal.Dialog className="sm:max-w-90">
                 <Modal.CloseTrigger />
                 <Modal.Header>
                   <Modal.Heading>Welcome to HeroUI</Modal.Heading>
                 </Modal.Header>
                 <Modal.Body>
                   <p>
-                    A beautiful, fast, and modern React UI library for building accessible and
-                    highly customizable web applications.
+                    A beautiful, fast, and modern React UI library for building accessible and highly
+                    customizable web applications.
                   </p>
                 </Modal.Body>
                 <Modal.Footer>
@@ -44,7 +40,7 @@ export function OverlaysSection() {
           <Popover.Content className="max-w-64">
             <Popover.Dialog>
               <Popover.Heading>Popover title</Popover.Heading>
-              <p className="mt-2 text-sm text-muted">
+              <p className="text-muted mt-2 text-sm">
                 This is the popover content, you can place anything here.
               </p>
             </Popover.Dialog>

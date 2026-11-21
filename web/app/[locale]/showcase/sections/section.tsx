@@ -6,7 +6,7 @@ export function LayoutSection() {
   return (
     <ShowcaseSection id="layout" title="Layout & Typography" description="Card / Separator / Typography">
       <DemoBlock title="Card">
-        <Card className="w-[360px]">
+        <Card className="w-90">
           <Card.Header>
             <Card.Title>Become an Acme creator!</Card.Title>
             <Card.Description>

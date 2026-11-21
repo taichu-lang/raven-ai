@@ -30,6 +30,7 @@ export function ChatSection() {
               { role: "user", id: "1", contents: [{ type: "text", text: "Hi, how are you today?" }] },
               { role: "assistant", id: "2", contents: [{ type: "text", text: "How can i help you?" }] },
             ],
+            annotations: [],
           }}
         >
           <div className="flex w-full flex-col gap-3">

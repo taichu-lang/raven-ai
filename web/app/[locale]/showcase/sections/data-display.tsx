@@ -3,12 +3,9 @@ import { DemoBlock, ShowcaseSection } from "../_components/showcase-section";
 
 const AVATAR_URLS = {
   blue: "https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/blue.jpg",
-  green:
-    "https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/green.jpg",
-  orange:
-    "https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/orange.jpg",
-  purple:
-    "https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/purple.jpg",
+  green: "https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/green.jpg",
+  orange: "https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/orange.jpg",
+  purple: "https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/purple.jpg",
   red: "https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/red.jpg",
 };
 
@@ -80,7 +77,7 @@ export function DataDisplaySection() {
       <DemoBlock title="Table">
         <Table>
           <Table.ScrollContainer>
-            <Table.Content aria-label="Team members" className="min-w-[600px]">
+            <Table.Content aria-label="Team members" className="min-w-150">
               <Table.Header>
                 <Table.Column isRowHeader>Name</Table.Column>
                 <Table.Column>Role</Table.Column>

@@ -5,20 +5,14 @@ const SPINNER_SIZES = ["sm", "md", "lg", "xl"] as const;
 
 export function FeedbackSection() {
   return (
-    <ShowcaseSection
-      id="feedback"
-      title="Feedback"
-      description="Alert / ProgressBar / Spinner / Skeleton"
-    >
+    <ShowcaseSection id="feedback" title="Feedback" description="Alert / ProgressBar / Spinner / Skeleton">
       <DemoBlock title="Alert">
         <div className="grid w-full gap-4">
           <Alert>
             <Alert.Indicator />
             <Alert.Content>
               <Alert.Title>New feature available</Alert.Title>
-              <Alert.Description>
-                Check out the latest updates, including dark mode support.
-              </Alert.Description>
+              <Alert.Description>Check out the latest updates, including dark mode support.</Alert.Description>
             </Alert.Content>
           </Alert>
           <Alert status="success">
@@ -31,18 +25,14 @@ export function FeedbackSection() {
             <Alert.Indicator />
             <Alert.Content>
               <Alert.Title>Scheduled maintenance</Alert.Title>
-              <Alert.Description>
-                The service will be unavailable this weekend.
-              </Alert.Description>
+              <Alert.Description>The service will be unavailable this weekend.</Alert.Description>
             </Alert.Content>
           </Alert>
           <Alert status="danger">
             <Alert.Indicator />
             <Alert.Content>
               <Alert.Title>Unable to connect to server</Alert.Title>
-              <Alert.Description>
-                Please check your network connection.
-              </Alert.Description>
+              <Alert.Description>Please check your network connection.</Alert.Description>
             </Alert.Content>
           </Alert>
         </div>
@@ -65,7 +55,7 @@ export function FeedbackSection() {
       </DemoBlock>
 
       <DemoBlock title="Skeleton">
-        <div className="w-[250px] space-y-5 rounded-lg p-4">
+        <div className="w-62.5 space-y-5 rounded-lg p-4">
           <Skeleton className="h-32 rounded-lg" />
           <div className="space-y-3">
             <Skeleton className="h-3 w-3/5 rounded-lg" />

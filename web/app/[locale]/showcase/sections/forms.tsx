@@ -28,11 +28,7 @@ export function FormsSection() {
       </DemoBlock>
 
       <DemoBlock title="TextArea">
-        <TextArea
-          aria-label="Message"
-          className="h-24 w-96"
-          placeholder="Write a short message…"
-        />
+        <TextArea aria-label="Message" className="h-24 w-96" placeholder="Write a short message…" />
       </DemoBlock>
 
       <DemoBlock title="Checkbox">
@@ -93,7 +89,7 @@ export function FormsSection() {
           <Label>Width</Label>
           <NumberField.Group>
             <NumberField.DecrementButton />
-            <NumberField.Input className="w-[120px]" />
+            <NumberField.Input className="w-30" />
             <NumberField.IncrementButton />
           </NumberField.Group>
         </NumberField>

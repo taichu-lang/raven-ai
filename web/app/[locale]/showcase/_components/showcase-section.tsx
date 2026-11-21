@@ -7,22 +7,12 @@ interface ShowcaseSectionProps {
   children: ReactNode;
 }
 
-export function ShowcaseSection({
-  id,
-  title,
-  description,
-  children,
-}: ShowcaseSectionProps) {
+export function ShowcaseSection({ id, title, description, children }: ShowcaseSectionProps) {
   return (
-    <section
-      id={id}
-      className="border-default scroll-mt-24 border-b py-10 last:border-b-0"
-    >
+    <section id={id} className="border-default scroll-mt-24 border-b py-10 last:border-b-0">
       <div className="mb-6 space-y-1">
         <h2 className="text-2xl font-semibold">{title}</h2>
-        {description ? (
-          <p className="text-muted text-sm">{description}</p>
-        ) : null}
+        {description ? <p className="text-muted text-sm">{description}</p> : null}
       </div>
       <div className="flex flex-col gap-6">{children}</div>
     </section>
