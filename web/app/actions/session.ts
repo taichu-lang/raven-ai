@@ -1,6 +1,6 @@
 "use server";
 
-import { clearSessionToken, setSessionToken } from "@/lib/session";
+import { clearSessionToken, setSessionToken } from "base-ui/platform/cookie";
 
 // Server actions are public POST endpoints, so the arguments must be validated.
 export async function storeSession(token: string, expiresAt: number) {

@@ -8,7 +8,7 @@ import { useRavenPlatform } from "base-ui/platform";
 import { Conversation } from "base-ui/types/chat";
 import { getUserName } from "base-ui/types/profile";
 import { usePathname, useRouter } from "hero-next/i18n/navigation";
-import { InfiniteScrollView, InfiniteScrollViewHandle, Item, Sidebar } from "hero-next/layout";
+import { InfiniteScrollView, InfiniteScrollViewHandle, Item, MenuItem, Sidebar } from "hero-next/layout";
 import { useTheme } from "hero-next/theme";
 import {
   BlocksIcon,
@@ -337,12 +337,12 @@ function Body() {
         if (meta.sectionKey === "extensions") {
           return (
             <div className="flex flex-col">
-              <Sidebar.Item href="/extensions" icon={<BlocksIcon className="size-4 shrink-0" />}>
+              <MenuItem href="/extensions" icon={<BlocksIcon className="size-4 shrink-0" />}>
                 {t("sidebar.extensions")}
-              </Sidebar.Item>
-              <Sidebar.Item href="/channels" icon={<MonitorSmartphoneIcon className="size-4 shrink-0" />}>
+              </MenuItem>
+              <MenuItem href="/channels" icon={<MonitorSmartphoneIcon className="size-4 shrink-0" />}>
                 {t("sidebar.channels")}
-              </Sidebar.Item>
+              </MenuItem>
               <div className="mt-4">
                 <p className="px-2 text-sm">{t("sidebar.tasks")}</p>
                 <Separator className="my-2" />

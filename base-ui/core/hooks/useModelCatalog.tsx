@@ -1,7 +1,7 @@
 "use client";
 
 import { useRavenPlatform } from "base-ui/platform";
-import { ModelCatalog, groupModelsByFamily } from "base-ui/types/models";
+import { ModelCatalog, groupModelsByFamily, groupModelsByPublisher } from "base-ui/types/models";
 import { useEffect, useMemo, useState } from "react";
 
 export function useModelCatalog() {
@@ -32,6 +32,7 @@ export function useModelCatalog() {
   }, [baseUrl]);
 
   const groups = useMemo(() => groupModelsByFamily(models), [models]);
+  const publisherGroup = useMemo(() => groupModelsByPublisher(models), [models]);
 
-  return { models, groups, loading };
+  return { models, groups, publisherGroup, loading };
 }

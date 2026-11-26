@@ -1,3 +1,17 @@
+export type ModelPublisher =
+  "deepseek" | "zai" | "moonshot" | "qwen" | "tencent" | "anthropic" | "openai" | "google";
+
+export const publisherNames: Record<ModelPublisher, string> = {
+  anthropic: "Anthropic",
+  zai: "Z.ai",
+  moonshot: "Moonshot",
+  qwen: "Qwen",
+  tencent: "Tencent",
+  openai: "OpenAI",
+  google: "Google",
+  deepseek: "DeepSeek",
+} as const;
+
 export interface ReasoningOption {
   type: string;
   values: string[];
@@ -34,13 +48,21 @@ export interface ModelCatalog {
   limit: ModelLimit;
   cost: ModelCost;
   protocols: string[];
-  provider: string;
+  publisher: ModelPublisher;
 }
 
 export function groupModelsByFamily(models: ModelCatalog[]): [string, ModelCatalog[]][] {
   const groups = new Map<string, ModelCatalog[]>();
   for (const m of models) {
     groups.set(m.family, [...(groups.get(m.family) ?? []), m]);
+  }
+  return [...groups];
+}
+
+export function groupModelsByPublisher(models: ModelCatalog[]): [ModelPublisher, ModelCatalog[]][] {
+  const groups = new Map<ModelPublisher, ModelCatalog[]>();
+  for (const m of models) {
+    groups.set(m.publisher, [...(groups.get(m.publisher) ?? []), m]);
   }
   return [...groups];
 }

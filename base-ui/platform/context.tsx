@@ -1,3 +1,5 @@
+"use client";
+
 import { Skill } from "hero-next/chat";
 import { createContext, useCallback, useContext, useState } from "react";
 import { SkillsLoader } from "./skills";
@@ -22,17 +24,32 @@ const noopLoader: SkillsLoader = {
   loadSkills: async () => [],
 };
 
-const RavenPlatformContext = createContext<RavenPlatform>({
+const defaultContext: RavenPlatform = {
   device: "web",
   skillsLoader: noopLoader,
   tokenStore: noopTokenStore,
   // We will use next.js api routers, so base url should be empty.
   baseUrl: "",
   conversationRouter: (id) => `/${id}`,
-});
+};
+
+const RavenPlatformContext = createContext<RavenPlatform>(defaultContext);
 
 export const useRavenPlatform = () => useContext(RavenPlatformContext);
-export const RavenPlatformProvider = RavenPlatformContext.Provider;
+
+export function RavenPlatformProvider({
+  children,
+  value,
+}: {
+  children: React.ReactNode;
+  value?: Partial<RavenPlatform>;
+}) {
+  return (
+    <RavenPlatformContext.Provider value={{ ...defaultContext, ...value }}>
+      {children}
+    </RavenPlatformContext.Provider>
+  );
+}
 
 export function useLoadSkills() {
   const { skillsLoader } = useRavenPlatform();

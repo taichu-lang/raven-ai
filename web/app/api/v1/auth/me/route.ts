@@ -1,6 +1,6 @@
 "server-only";
 
-import { buildAuthHeader, clearSessionToken } from "@/lib/session";
+import { buildAuthHeader, clearSessionToken } from "base-ui/platform/cookie";
 import { NextResponse } from "next/server";
 
 // Returns the current user of the session cookie. The token is attached here, so it never reaches the browser scripts.

@@ -1,6 +1,6 @@
 "server-only";
 
-import { buildAuthHeader } from "@/lib/session";
+import { buildAuthHeader } from "base-ui/platform/cookie";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {

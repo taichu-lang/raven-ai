@@ -1,4 +1,5 @@
 export type AuthMethod = "wechat" | "password" | "otp";
+export type UserRole = "user" | "admin";
 
 export interface OTPCredential {
   email: string;
@@ -18,6 +19,7 @@ export interface LoginRequest {
 export interface User {
   name: string;
   email: string;
+  role: UserRole;
 }
 
 // The raw login response of the backend. Web never exposes the token to the browser (kept in an HttpOnly cookie

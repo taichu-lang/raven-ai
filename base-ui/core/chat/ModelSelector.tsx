@@ -52,7 +52,7 @@ export function ModelSelector() {
             {groups.map(([family, models]) => (
               <Dropdown.SubmenuTrigger key={family}>
                 <Dropdown.Item id={family} textValue={family}>
-                  <Label className="capitalize">{family}</Label>
+                  <Label>{family}</Label>
                   <ChevronRightIcon className="text-muted ms-auto size-4 shrink-0" />
                 </Dropdown.Item>
                 <Dropdown.Popover>
