@@ -68,8 +68,6 @@ export function OtpLoginForm() {
 
   return (
     <form onSubmit={onSubmit} className="flex w-full max-w-[320px] flex-col gap-4">
-      <h2 className="mb-6 text-center text-xl font-semibold">{t("auth.otpTitle")}</h2>
-
       <TextField isRequired name="email">
         <Label>{t("auth.emailLabel")}</Label>
         <InputGroup>

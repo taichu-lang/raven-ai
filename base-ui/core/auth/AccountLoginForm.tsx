@@ -27,8 +27,6 @@ export function AccountLoginForm() {
 
   return (
     <form onSubmit={onSubmit} className="flex w-full max-w-[320px] flex-col gap-4">
-      <h2 className="mb-6 text-center text-xl font-semibold">{t("auth.accountTitle")}</h2>
-
       <TextField isRequired name="email" value={email} onChange={setEmail}>
         <Label>{t("auth.emailLabel")}</Label>
         <Input placeholder={t("auth.emailPlaceholder")} />

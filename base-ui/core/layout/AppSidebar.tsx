@@ -30,14 +30,18 @@ import { getConversations } from "./lib";
 
 /**
  * Restores the persisted preference on first load: rehydrates the store from
- * localStorage, then applies the saved theme and navigates to the saved locale
- * when it differs from the current URL locale.
+ * localStorage, then applies the saved theme. The saved locale is applied only
+ * on desktop: static export has no middleware, so this is the only place that
+ * can restore it. On web the middleware already remembers the locale via the
+ * NEXT_LOCALE cookie, and an explicit locale in the URL (ex: a shared /en link)
+ * must win over the saved preference.
  */
 function PreferenceSync() {
   const pathname = usePathname();
   const router = useRouter();
   const locale = useLocale();
   const { setTheme } = useTheme();
+  const { device } = useRavenPlatform();
   const synced = useRef(false);
 
   useEffect(() => {
@@ -50,12 +54,12 @@ function PreferenceSync() {
       if (savedTheme) {
         setTheme(savedTheme);
       }
-      if (savedLocale && savedLocale !== locale) {
+      if (device === "desktop" && savedLocale && savedLocale !== locale) {
         router.replace(pathname, { locale: savedLocale });
       }
     };
     restore();
-  }, [locale, pathname, router, setTheme]);
+  }, [device, locale, pathname, router, setTheme]);
 
   return null;
 }

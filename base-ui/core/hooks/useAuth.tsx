@@ -63,6 +63,7 @@ export function useAuthExt() {
   const setUser = useAuth((s) => s.setUser);
   const signOut = useAuth((s) => s.signOut);
   const setAnonymous = useAuth((s) => s.setAnonymous);
+  const toggleAuthModal = useAuth((s) => s.toggleAuthModal);
   const [pending, setPending] = useState<boolean>(false);
 
   const login = useCallback(
@@ -90,6 +91,10 @@ export function useAuthExt() {
         // Each platform decides where the token is persisted (HttpOnly cookie, system keychain, ...).
         await tokenStore.set(token, expires_at);
         setUser(user);
+
+        // Close the login modal once authed.
+        toggleAuthModal(false);
+
         return ApiCodeOK;
       } catch {
         toast.danger("Network issue");
@@ -99,7 +104,7 @@ export function useAuthExt() {
 
       return ApiCodeSystem;
     },
-    [baseUrl, tokenStore, setUser],
+    [baseUrl, tokenStore, setUser, toggleAuthModal],
   );
 
   const logout = useCallback(async () => {

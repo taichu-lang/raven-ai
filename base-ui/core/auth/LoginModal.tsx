@@ -1,9 +1,10 @@
 "use client";
 
-import { Button, Modal } from "@heroui/react";
+import { Modal, Tabs } from "@heroui/react";
 import { useAuth, useAuthExt } from "base-ui/hooks/useAuth";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
+import { AuthMethod } from "../types/profile";
 import { AccountLoginForm } from "./AccountLoginForm";
 import { FeatureCarousel } from "./FeatureCarousel";
 import { OtpLoginForm } from "./OtpLoginForm";
@@ -37,24 +38,20 @@ export function LoginModal() {
               </div>
 
               {/* Right: login methods */}
-              <div className="flex min-h-115 flex-col items-center justify-center gap-6 p-10 md:min-h-140 md:pt-12">
-                {method === "wechat" ? (
-                  <WechatLoginPanel />
-                ) : method === "otp" ? (
-                  <OtpLoginForm />
-                ) : (
-                  <AccountLoginForm />
-                )}
+              <div className="flex min-h-115 flex-col items-center justify-between gap-6 p-10 md:min-h-140 md:pt-12">
+                <Tabs className="mx-auto flex w-fit" onSelectionChange={(key) => setMethod(key as AuthMethod)}>
+                  <Tabs.ListContainer>
+                    <Tabs.List aria-label="options">
+                      <Tabs.Tab id="password">{t("auth.switchToAccount")}</Tabs.Tab>
+                      <Tabs.Tab id="wechat">{t("auth.switchToWechat")}</Tabs.Tab>
+                    </Tabs.List>
+                  </Tabs.ListContainer>
+                </Tabs>
+                {method === "wechat" && <WechatLoginPanel />}
+                {method === "otp" && <OtpLoginForm />}
+                {method === "password" && <AccountLoginForm />}
 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onPress={() => setMethod(method === "wechat" ? "password" : "wechat")}
-                >
-                  {method === "wechat" ? t("auth.switchToAccount") : t("auth.switchToWechat")}
-                </Button>
-
-                <p className="text-muted mt-auto max-w-75 text-center text-xs">{t("auth.agreement")}</p>
+                <p className="text-muted max-w-75 text-center text-xs">{t("auth.agreement")}</p>
               </div>
             </div>
           </Modal.Body>

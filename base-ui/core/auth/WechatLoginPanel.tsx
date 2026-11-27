@@ -45,13 +45,8 @@ export function WechatLoginPanel() {
   const qrUrl = `https://raven.ai/auth/qr?ticket=${ticket}`;
 
   return (
-    <>
-      <h2 className="text-xl font-semibold">{t("auth.wechatTitle")}</h2>
-
-      <div
-        aria-label={t("auth.wechatTitle")}
-        className="relative cursor-none rounded-2xl bg-white p-3 shadow-sm"
-      >
+    <div className="flex flex-col items-center">
+      <div className="relative cursor-none rounded-2xl bg-white p-3 shadow-sm">
         <QRCodeSVG value={qrUrl} size={192} level="M" />
         {status !== "pending" && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-2xl bg-white/90 p-4">
@@ -75,7 +70,7 @@ export function WechatLoginPanel() {
         )}
       </div>
 
-      <p className="text-muted text-sm">{t("auth.wechatHint")}</p>
-    </>
+      <p className="text-muted mt-4 text-sm">{t("auth.wechatHint")}</p>
+    </div>
   );
 }
